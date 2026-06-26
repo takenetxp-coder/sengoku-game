@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戦国武将ゲーム リメイク版 ｜ 遊び方マニュアル</title>
+<style>
+  :root{
+    --ink:#1a1410; --paper:#f3ecdb; --paper2:#e7dcc3;
+    --sumi:#2b2620; --aka:#9c2a1f; --aka2:#c4402f;
+    --kin:#b08828; --midori:#4a6b3a; --ao:#3a5a7a;
+    --line:#b9ab8d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--sumi); color:var(--ink);
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif; line-height:1.8;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:0 0 60px;}
+  header{
+    background:var(--aka); color:var(--paper); padding:28px 24px 22px;
+    text-align:center; border-bottom:4px solid var(--kin);
+  }
+  header h1{margin:0; font-size:30px; letter-spacing:6px; font-weight:700;}
+  header .en{font-size:12px; letter-spacing:3px; color:#f0d9a0; margin-top:4px;}
+  header .lead{font-size:13px; margin-top:10px; color:#f5e6c8; letter-spacing:1px;}
+  header .ver{font-size:11px; color:#f0d9a0; margin-top:6px; display:block;}
+  .body{background:var(--paper); padding:8px 24px 24px;}
+  section{margin:26px 0; }
+  h2{
+    font-size:19px; letter-spacing:2px; color:var(--sumi); margin:0 0 12px;
+    border-left:6px solid var(--aka); padding:4px 0 4px 12px; background:var(--paper2);
+  }
+  h3{font-size:15px; letter-spacing:1px; color:var(--aka); margin:18px 0 6px;}
+  p{margin:8px 0;}
+  .num{
+    display:inline-block; width:26px; height:26px; line-height:26px; text-align:center;
+    background:var(--sumi); color:var(--paper); border-radius:50%; font-size:14px;
+    margin-right:8px; font-weight:700;
+  }
+  .step{margin:14px 0; padding-left:2px;}
+  .box{
+    background:#fff; border:1px solid var(--line); border-radius:5px;
+    padding:12px 16px; margin:12px 0;
+  }
+  .tip{border-left:4px solid var(--kin); background:#fbf5e6;}
+  .warn{border-left:4px solid var(--aka); background:#fbeae6;}
+  .info{border-left:4px solid var(--ao); background:#edf2f8;}
+  table{width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; background:#fff;}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:center;}
+  th{background:var(--paper2); letter-spacing:1px;}
+  td.l{text-align:left;}
+  .adv-win{color:var(--midori); font-weight:700;}
+  .adv-lose{color:var(--aka); font-weight:700;}
+  .unit{font-weight:700;}
+  ul{margin:8px 0; padding-left:22px;}
+  li{margin:5px 0;}
+  .big{font-size:16px; font-weight:700; color:var(--aka);}
+  .center{text-align:center;}
+  .cap{font-size:12px; color:#6b5f48;}
+  .triangle{
+    text-align:center; font-size:15px; line-height:2.2; background:#fff;
+    border:1px solid var(--line); border-radius:5px; padding:14px; margin:12px 0;
+  }
+  .triangle b{color:var(--aka);}
+  footer{text-align:center; color:#9a8f7a; font-size:12px; padding:20px;}
+  .pill{display:inline-block; background:var(--paper2); border:1px solid var(--line);
+    border-radius:12px; padding:1px 10px; font-size:13px; margin:2px;}
+  .mk-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0;}
+  .mk-card{background:#fff; border:1px solid var(--line); border-radius:6px; padding:10px 14px;}
+  .mk-card .icon{font-size:22px; display:block; margin-bottom:4px;}
+  .mk-card b{color:var(--sumi);}
+  .mk-card p{margin:4px 0 0; font-size:13px; color:#4a3f2f;}
+  .new-badge{
+    display:inline-block; font-size:10px; background:var(--aka); color:#fff;
+    border-radius:3px; padding:1px 5px; margin-left:6px; vertical-align:middle;
+    letter-spacing:0.5px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>戦国武将ゲーム</h1>
+    <div class="en">SENGOKU — リメイク版</div>
+    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル</div>
+    <span class="ver">v0.3 — 機能拡張版（v27）対応</span>
+  </header>
+
+  <div class="body">
+
+    <section>
+      <h2>このゲームは？</h2>
+      <p>1982年にタカトクトイスが発売したボードゲーム「戦国武将ゲーム」を、現代に蘇らせた4人対戦の戦国シミュレーションです。あなたは戦国大名となり、領地を広げ、軍を率い、ライバルを出し抜いて<span class="big">京都への上洛</span>を目指します。最初に京で征夷大将軍となった者が、天下を取ります。</p>
+      <p>対戦相手3人はコンピュータ（AI）が操作します。1ゲームは数十分ほど。ブラウザだけで遊べます。</p>
+    </section>
+
+    <section>
+      <h2>勝利の条件</h2>
+      <p>勝ち方はただ一つ。<span class="big">京都に上洛して征夷大将軍になること</span>です。ただし、京にはいきなり入れません。次の手順を踏みます。</p>
+      <div class="box">
+        <div class="step"><span class="num">1</span><b>京都周辺の「ゲート国」6つのうち、4つ以上を支配する。</b><br>
+        <span class="cap">ゲート国＝摂津・近江・丹波・大和・河内・伊賀（赤枠の国）。4つ取ると京都への道が開きます。</span></div>
+        <div class="step"><span class="num">2</span><b>京都に大将（軍）を進め、「参内」を宣言する。</b></div>
+        <div class="step"><span class="num">3</span><b>次の自分の手番まで、京都を守りきる。</b><br>
+        <span class="cap">この間にライバルが京都を奪い返したり、ゲート国を崩したりすると、参内は失敗。守りきれば天下統一です。</span></div>
+      </div>
+      <div class="box warn"><b>注意：</b>参内を宣言したら、残りの全員があなたを止めにきます。最後の1手番をどう守るかが勝負の山場です。</div>
+    </section>
+
+    <section>
+      <h2>遊びはじめ</h2>
+      <h3>大名を選ぶ</h3>
+      <p>ゲームを開くと、4人の大名から1人を選びます。</p>
+      <table>
+        <tr><th>大名</th><th>本拠</th><th>京都への近さ</th><th>難易度</th></tr>
+        <tr><td>織田</td><td>尾張（中央）</td><td>とても近い</td><td class="adv-win">易しい</td></tr>
+        <tr><td>毛利</td><td>安芸（西国）</td><td>やや遠い</td><td>ふつう</td></tr>
+        <tr><td>伊達</td><td>陸奥（東北）</td><td>やや遠い</td><td>ふつう</td></tr>
+        <tr><td>島津</td><td>薩摩（九州）</td><td>とても遠い</td><td class="adv-lose">難しい</td></tr>
+      </table>
+      <p class="cap">京都に近い大名ほど上洛が楽で有利です。腕に自信があれば、遠い島津や伊達で挑戦してみましょう。なお、京都から遠い大名ほど手番が早く回ってくる（先に動ける）ので、不利が少し和らぎます。</p>
+    </section>
+
+    <section>
+      <h2>手番でできること</h2>
+      <p>あなたの手番では、次のうち<span class="big">どれか1つだけ</span>を行えます。1つ行うと手番終了。「手番を終える」を押すと、次の大名に番が回ります。</p>
+      <div class="box">
+        <h3 style="margin-top:0;">① 軍を動かす（移動・進軍・合戦）</h3>
+        <ul>
+          <li><b>城のある自分の領地</b>をクリックして選ぶ。</li>
+          <li>緑に光った隣の国をクリックすると、そこへ進軍。</li>
+          <li>連れていく兵を兵科ごとに選べます（全部でも一部でもOK）。</li>
+          <li>進んだ先に敵がいれば<b>合戦</b>になります。</li>
+        </ul>
+        <h3>② 軍を雇う（徴募）</h3>
+        <ul>
+          <li>城のある自分の領地を選び、右の兵科ボタンを押すと、その兵科を1隊雇えます（1手番に1隊）。</li>
+        </ul>
+        <h3>③ 築城する</h3>
+        <ul>
+          <li>自分の兵がいる「城のない土地」を選び、「築城」ボタンを押すと、その国が正式な領地になり、収入を生むようになります。</li>
+        </ul>
+      </div>
+      <div class="box warn"><b>大事なルール：</b>兵を動かせるのは<b>城のある領地から</b>だけです。空き地に進軍した兵や、敵から奪ったばかりの土地の兵は、<b>そこに築城するまで次に動けません</b>。前に進むには、一歩ずつ土地を固めながら攻め上がります。</div>
+      <div class="box info"><b>手番スキップの確認：</b>何も行動せずに「手番を終える」を押すと、確認ダイアログが表示されます。本当にスキップするか、それとも行動するかを選べます。<span class="new-badge">NEW</span></div>
+    </section>
+
+    <section>
+      <h2>お金と領地のしくみ</h2>
+      <ul>
+        <li>手番の始めに、<b>城のある領地</b>から収入が入ります（その国の石高の1割）。石高の高い国ほど儲かります。</li>
+        <li>城や軍を持っていると、毎手番わずかな維持費がかかります。</li>
+        <li>空き地に兵を進めただけでは収入は入りません。<b>築城して初めて</b>領地となり、収入源になります。</li>
+        <li>築城の費用は、その国の石高と同じ額（例：10万石の国なら10万両）。高石高の国は強力ですが、城を建てるのも高くつきます。</li>
+      </ul>
+      <div class="box tip"><b>コツ：</b>序盤は手近な国に進軍→築城を繰り返して収入の土台を作り、力を蓄えてから京都を目指すのが王道です。</div>
+    </section>
+
+    <section>
+      <h2>特産地の効果 <span class="new-badge">NEW</span></h2>
+      <p>地図上に絵文字で示された<b>特産地</b>は、その国を城ごと保有すると特別な恩恵をもたらします。特産はそれぞれ効果が異なり、戦略の軸になります。</p>
+      <div class="mk-grid">
+        <div class="mk-card">
+          <span class="icon">🌾</span>
+          <b>米どころ</b>
+          <p>米産地1か所につき、軍1隊分の<b>維持費を免除</b>。大軍を長く養えるようになります。</p>
+        </div>
+        <div class="mk-card">
+          <span class="icon">🧂</span>
+          <b>塩の産地</b>
+          <p>収入+1に加え、隣接する自城すべての収入が<b>+0.5</b>ずつ増えます。領土を繋げるほど効果大。</p>
+        </div>
+        <div class="mk-card">
+          <span class="icon">💰</span>
+          <b>商業都市</b>
+          <p>収入<b>+3</b>。さらに商業都市またはその隣接地への<b>築城費用が20%引き</b>になります。</p>
+        </div>
+        <div class="mk-card">
+          <span class="icon">⛏</span>
+          <b>金山（鉱山）</b>
+          <p>収入<b>+4</b>。さらに飢饉・水害・祭礼などの<b>天運カードの被害が半減</b>します。</p>
+        </div>
+      </div>
+      <div class="box tip"><b>戦略メモ：</b>🌾米は大軍向き、💰商は前線拡大向き、⛏金は安定型——特産地の組み合わせで、自分なりの経営スタイルを作りましょう。</div>
+    </section>
+
+    <section>
+      <h2>合戦のしくみ — 兵科の三すくみ</h2>
+      <p>このゲームの戦いの核心は、兵科同士の<span class="big">相性（じゃんけんの関係）</span>です。相手より有利な兵科をぶつければ、少ない兵でも勝てます。</p>
+      <div class="triangle">
+        <b>騎馬</b> は <b>歩兵</b> に強い<br>
+        <b>歩兵</b> は <b>弓隊</b> に強い<br>
+        <b>弓隊</b> は <b>騎馬</b> に強い<br>
+        <span class="cap">この3つがぐるぐる回る三すくみ。さらに——</span><br>
+        <b>鉄砲</b> は 騎馬・歩兵 に強い（弓には弱い）<br>
+        <b>大砲</b> は 密集に強いが 騎馬に弱い
+      </div>
+      <h3>兵科の一覧</h3>
+      <table>
+        <tr><th>兵科</th><th>雇う費用</th><th>強い相手</th><th>弱い相手</th></tr>
+        <tr><td class="unit">歩兵</td><td>2万両</td><td class="adv-win">弓隊</td><td class="adv-lose">騎馬</td></tr>
+        <tr><td class="unit">弓隊</td><td>2万両</td><td class="adv-win">騎馬・鉄砲</td><td class="adv-lose">歩兵</td></tr>
+        <tr><td class="unit">騎馬</td><td>2万両</td><td class="adv-win">歩兵・大砲</td><td class="adv-lose">弓隊</td></tr>
+        <tr><td class="unit">鉄砲</td><td>3万両</td><td class="adv-win">騎馬・歩兵</td><td class="adv-lose">弓隊</td></tr>
+        <tr><td class="unit">大砲</td><td>3万両</td><td class="adv-win">歩兵</td><td class="adv-lose">騎馬</td></tr>
+      </table>
+      <h3>勝敗の決まり方</h3>
+      <ul>
+        <li>勝率は「兵科の相性」と「兵の数」で決まります。出陣前に勝率が表示されます。</li>
+        <li>有利な兵科をぶつけ、兵の数で上回るほど勝ちやすくなります。</li>
+        <li>ただし、どんなに不利でも最低1割は勝つ見込みがあります。<b>運の要素も残っている</b>ので、最後まで諦めないこと。</li>
+      </ul>
+      <div class="box tip"><b>偵察のすすめ：</b>敵の国をクリックすると、その国に何の兵科が何隊いるか見られます（兵科内訳ポップアップ）。相手の編成を見てから、刺さる兵科を揃えて攻めましょう。</div>
+      <h3>合戦の結果</h3>
+      <ul>
+        <li><b>勝つと：</b>相手の城は落城し、その土地を占拠します。改めて築城すれば自分の領地になります。</li>
+        <li><b>負けても：</b>軍が全滅することはなく、半分ほどが生き残って退却します。立て直せます。</li>
+        <li><b>大将を討たれると：</b>佐渡へ島流しとなり、2手番のあいだ動けなくなります。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>天運カード</h2>
+      <p>手番の始めに、毎回「天運カード」を1枚引きます。豊作でお金が増えたり、飢饉で減ったり、浪人が仲間に加わって兵が増えたり——その時々の運で、状況が少し揺れます。大きく勝敗を左右はしませんが、流れを変えるきっかけになります。</p>
+      <h3>カードの種類（主なもの）</h3>
+      <table>
+        <tr><th>カード</th><th>効果</th></tr>
+        <tr><td>豊作</td><td class="l">収入増加</td></tr>
+        <tr><td>飢饉</td><td class="l">お金が減る（⛏金山で被害半減）</td></tr>
+        <tr><td>水害</td><td class="l">お金が減る（⛏金山で被害半減）</td></tr>
+        <tr><td>祭礼</td><td class="l">お金が少し減る（⛏金山で被害半減）</td></tr>
+        <tr><td>浪人参集</td><td class="l">歩兵が最前線に加わる</td></tr>
+        <tr><td>馬廻増強</td><td class="l">騎馬が最前線に加わる</td></tr>
+        <tr><td>弓衆召集 <span class="new-badge">NEW</span></td><td class="l">弓隊が最前線に加わる</td></tr>
+        <tr><td>鉄砲伝来 <span class="new-badge">NEW</span></td><td class="l">鉄砲が最前線に加わる</td></tr>
+        <tr><td>名馬献上</td><td class="l">大将の機動力が一時上がる</td></tr>
+        <tr><td>秘薬到来</td><td class="l">島流し中の大将が早期帰還</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>盤面の見方</h2>
+      <ul>
+        <li>国の枠の<b>色</b>＝その領地の持ち主（あなたは青）。色がついていない国は、まだ誰の領地でもありません。</li>
+        <li><b>赤い枠</b>の国＝京都ゲート国（上洛に必要な6国）。</li>
+        <li>国の中の<b>数字</b>＝そこにいる兵の数。<b>🏯</b>＝城。</li>
+        <li>絵文字＝特産（🌾米どころ・🧂塩・💰商業・⛏鉱山）。詳しい効果は「特産地の効果」の章を参照。</li>
+        <li>国をクリックすると、<b>地図上にポップアップ</b>が表示され、兵科の内訳を確認できます。ポップアップはタイトル部分をドラッグして移動できます。<span class="new-badge">NEW</span></li>
+        <li>AIが攻撃してきたときは<b>ポップアップで結果が通知</b>されます。確認ボタンを押すまで次のAIの手番は進みません。<span class="new-badge">NEW</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>勝つためのヒント</h2>
+      <ul>
+        <li><b>序盤は内政。</b>欲張って京都へ急ぐより、手近な国を築城して収入を伸ばすほうが、結局は強くなります。</li>
+        <li><b>特産地を狙え。</b>💰商や⛏金を早めに確保すると収入差がつきます。米産地を複数持てば大軍も維持できます。</li>
+        <li><b>戦線は地続きで。</b>兵は城のある領地からしか動けません。飛び地は作れないので、着実に隣へ広げましょう。</li>
+        <li><b>相手を読む。</b>敵国を偵察して（クリックでポップアップ）、有利な兵科で攻めるのが勝利の近道。</li>
+        <li><b>上洛は機を見て。</b>ゲート4国を固め、軍を整えてから一気に。参内中は全員に狙われるので、守れる戦力を残しておくこと。</li>
+        <li><b>誰かが上洛しそうなら、全員で止める。</b>あなたも、AIたちも、リーダーを引きずり下ろしにきます。</li>
+      </ul>
+    </section>
+
+    <footer>
+      原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
+      ── 天下布武の道は、汝の采配にあり ──<br><br>
+      v0.3 (v27) ｜ 対応機能：特産地効果・兵科ポップアップ・天運カード拡張・AI強化
+    </footer>
+
+  </div>
+</div>
+</body>
+</html>
