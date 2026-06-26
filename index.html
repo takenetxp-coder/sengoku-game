@@ -196,10 +196,62 @@
   .dmax{font-size:11px; color:#7a6f58;}
   .dprev{margin-top:8px; padding:6px; background:#f5efe1; border:1px solid var(--line);
          border-radius:3px; font-size:12px; text-align:center;}
+
+  /* ===== タイトル画面 ===== */
+  #title-screen{
+    position:fixed; inset:0; z-index:200;
+    background:var(--sumi);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:0;
+  }
+  #title-screen .ts-deco{
+    font-size:13px; letter-spacing:6px; color:#b08828; margin-bottom:8px;
+  }
+  #title-screen h1{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:clamp(32px,6vw,64px); letter-spacing:12px; color:#f3ecdb;
+    margin:0 0 4px; text-shadow:0 2px 12px rgba(0,0,0,0.6);
+  }
+  #title-screen .ts-sub{
+    font-size:13px; letter-spacing:4px; color:#b09878; margin-bottom:32px;
+  }
+  #title-screen .ts-divider{
+    width:260px; height:2px;
+    background:linear-gradient(to right,transparent,#b08828,transparent);
+    margin:12px 0 28px;
+  }
+  #title-screen .ts-start{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:17px; letter-spacing:4px;
+    background:var(--aka); color:#f3ecdb;
+    border:2px solid #c4402f; border-radius:4px;
+    padding:12px 48px; cursor:pointer;
+    transition:background 0.2s, transform 0.1s;
+  }
+  #title-screen .ts-start:hover{ background:#c4402f; transform:scale(1.03); }
+  #title-screen .ts-credit{
+    position:absolute; bottom:18px;
+    font-size:11px; color:#5a4f3a; letter-spacing:1px;
+  }
+  #title-screen .ts-ver{
+    font-size:10px; color:#5a4f3a; margin-top:6px; letter-spacing:1px;
+  }
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
 </head>
 <body>
+<div id="title-screen">
+  <div class="ts-deco">天 下 布 武</div>
+  <h1>戦国武将ゲーム</h1>
+  <div class="ts-sub">SENGOKU — リメイク版</div>
+  <div class="ts-divider"></div>
+  <button class="ts-start" onclick="hideTitleScreen()">ゲームを始める</button>
+  <div class="ts-credit">
+    原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
+    <span class="ts-ver">v0.4 — ルール強化版（v28）</span>
+  </div>
+</div>
+
 <div class="wrap">
   <header>
     <h1>戦国武将ゲーム</h1>
@@ -1840,8 +1892,16 @@ function startGame(){
   };
 }
 
+// ---- タイトル画面 ----
+function hideTitleScreen(){
+  const ts = document.getElementById('title-screen');
+  ts.style.transition = 'opacity 0.4s';
+  ts.style.opacity = '0';
+  setTimeout(()=>{ ts.style.display='none'; showDaimyoSelect(); }, 400);
+}
 // ---- 起動 ----
-showDaimyoSelect();
+// タイトル画面を表示したまま待機（ボタン押下でhideTitleScreen→showDaimyoSelect）
+
 </script>
 </body>
 </html>
