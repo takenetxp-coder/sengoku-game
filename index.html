@@ -1365,4 +1365,483 @@ function winnerLossRate(winnerN, loserN){
   let rate = 0.30/r;            // r=1→0.30、r=3→0.10、r=6→0.05
   return Math.max(0.04, Math.min(0.35, rate));
 }
-function countSoldiers(army){ return units
+function countSoldiers(army){ return unitsTotal(army)-(army&&army['大将']||0); }
+function resolveBattle(from,to,attacker,attWin,p,attArmy,fullArmy){
+  const f=G.byid[from], t=G.byid[to];
+  const defender = (t.owner!==null && t.owner!==attacker) ? t.owner
+                 : (t.armyOwner!==null && t.armyOwner!==attacker) ? t.armyOwner : null;
+  const attName=`<span class="${attacker===0?'you':'ai'}">${PNAMES[attacker]}</span>`;
+  let march = attArmy ? {...attArmy} : {...f.army};
+  const attHasTaisho = hasTaisho(march);
+  const defHadTaisho = hasTaisho(t.army);
+  if(fullArmy){ f.army={}; f.armyOwner=null; }
+
+  // 戦闘前の兵数（被害集計用）。損耗計算は兵のみ（大将を数に入れない）。
+  const attBefore=countSoldiers(march), defBefore=countSoldiers(t.army);
+  const nA=unitsTotal(march), nD=unitsTotal(t.army);   // 表示用（大将込み）
+  const sA=attBefore, sD=defBefore;                    // 損耗計算用（兵のみ）
+  let result={attacker, defender, from, to, attWin, p,
+              attMain:mainType(march), defMain:mainType(t.army),
+              attN:nA, defN:nD, attHadTaisho:attHasTaisho, defHadTaisho:defHadTaisho,
+              taishoDied:null, castleFell:false};
+
+  if(attWin){
+    // 勝者（攻撃側）の損耗は兵力差で軽減。兵のみで比率を算出。
+    const wr=winnerLossRate(sA, sD);
+    march = applyLoss(march, wr);
+    const hadCastle=t.castle;
+    result.castleFell=hadCastle;
+    t.castle=false; t.owner=null;
+    t.army=march; t.armyOwner=attacker;
+    if(hadCastle){
+      log(`${attName}：${t.nm} を攻め落とし落城させた（勝率${Math.round(p*100)}%）。改めて築城すれば領地に。`);
+    } else {
+      log(`${attName}：${t.nm} の敵軍を撃破し占拠（勝率${Math.round(p*100)}%）。`);
+    }
+    if(defHadTaisho && defender!==null){
+      if(t.army['大将']) delete t.army['大将'];
+      captureTaisho(defender);
+      result.taishoDied=defender;
+    }
+    result.attAfter=countSoldiers(march);
+    result.defAfter=0;
+  }else{
+    // 攻撃側敗北：攻撃側は敗者損耗、防御側（勝者）は兵力差で軽減
+    march = applyLoss(march, P.loserLoss);
+    if(attHasTaisho){
+      if(march['大将']) delete march['大将'];
+      captureTaisho(attacker);
+      result.taishoDied=attacker;
+    }
+    for(const u in march){ f.army[u]=(f.army[u]||0)+march[u]; }
+    if(unitsTotal(f.army)>0) f.armyOwner=attacker;
+    else f.armyOwner=null;
+    const wr=winnerLossRate(sD, sA);
+    t.army=applyLoss(t.army, wr);
+    if(unitsTotal(t.army)===0) t.armyOwner=null;
+    log(`${attName}：${t.nm} 攻めに失敗、撤退（勝率${Math.round(p*100)}%）。`);
+    result.attAfter=countSoldiers(march);
+    result.defAfter=countSoldiers(t.army);
+  }
+  if(attacker===0) G.acted=true;
+  G.phase='idle'; G.moveFrom=null; G.selected=null;
+  render(); updateGuide();
+  // あなたが関わる合戦なら結果ポップアップ
+  if(attacker===0 || defender===0){
+    showBattleResult(result, attBefore, defBefore);
+  }
+  checkWin();
+}
+
+// ---- 合戦結果ポップアップ（あなたが関わる戦のみ）----
+function showBattleResult(r, attBefore, defBefore){
+  const youAreAttacker = (r.attacker===0);
+  const youWon = (youAreAttacker && r.attWin) || (!youAreAttacker && !r.attWin);
+  const f=G.byid[r.from], t=G.byid[r.to];
+  // 効果音
+  if(r.taishoDied!==null){ Audio.sfxTaisho(); }
+  else if(youWon){ Audio.sfxWin(); } else { Audio.sfxLose(); }
+  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
+  const attLost = Math.max(0, attBefore - (r.attAfter||0));
+  const defLost = Math.max(0, defBefore - (r.defAfter||0));
+  const head = youWon
+    ? '<div style="font-size:24px;color:var(--midori);font-weight:700;text-align:center;">勝利！</div>'
+    : '<div style="font-size:24px;color:var(--aka);font-weight:700;text-align:center;">敗北…</div>';
+  const relRaw=(ADV[r.attMain]&&ADV[r.attMain][r.defMain]!=null)?ADV[r.attMain][r.defMain]:0;
+  const relTxt = relRaw>0?'攻撃側 有利':relRaw<0?'攻撃側 不利':'互角';
+  let taishoLine='';
+  if(r.taishoDied!==null){
+    taishoLine=`<div style="text-align:center;color:var(--aka);font-weight:700;margin-top:6px;">★ ${PNAMES[r.taishoDied]}の大将を討ち取った！（佐渡へ島流し）</div>`;
+    if(r.taishoDied===0) taishoLine=`<div style="text-align:center;color:var(--aka);font-weight:700;margin-top:6px;">★ あなたの大将が討たれた…（佐渡へ島流し）</div>`;
+  }
+  m.innerHTML=`
+    <h3>⚔ 合戦の結果</h3>
+    ${head}
+    <div style="font-size:12px;text-align:center;color:#6b5f48;margin:4px 0;">${f.nm} → ${t.nm}（勝率 ${Math.round(r.p*100)}%）</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;">
+      <tr style="background:var(--paper2);"><th style="padding:4px;border:1px solid var(--line);"></th>
+        <th style="padding:4px;border:1px solid var(--line);">${PNAMES[r.attacker]}（攻）</th>
+        <th style="padding:4px;border:1px solid var(--line);">${r.defender!==null?PNAMES[r.defender]:'守備'}（防）</th></tr>
+      <tr><td style="padding:4px;border:1px solid var(--line);">主力</td>
+        <td style="padding:4px;border:1px solid var(--line);text-align:center;">${r.attMain||'－'}${r.attHadTaisho?' ★':''}</td>
+        <td style="padding:4px;border:1px solid var(--line);text-align:center;">${r.defMain||'－'}${r.defHadTaisho?' ★':''}</td></tr>
+      <tr><td style="padding:4px;border:1px solid var(--line);">兵力</td>
+        <td style="padding:4px;border:1px solid var(--line);text-align:center;">${r.attN}</td>
+        <td style="padding:4px;border:1px solid var(--line);text-align:center;">${r.defN}</td></tr>
+      <tr><td style="padding:4px;border:1px solid var(--line);">損害</td>
+        <td style="padding:4px;border:1px solid var(--line);text-align:center;color:var(--aka);">-${attLost}</td>
+        <td style="padding:4px;border:1px solid var(--line);text-align:center;color:var(--aka);">-${defLost}</td></tr>
+    </table>
+    <div style="font-size:11px;text-align:center;color:#6b5f48;margin-top:5px;">兵科相性：${r.attMain||'－'}→${r.defMain||'－'}（${relTxt}）${r.castleFell?' ／ 落城':''}</div>
+    ${taishoLine}
+    <button class="act" onclick="document.getElementById('modalbg').style.display='none'">閉じる</button>
+  `;
+  mb.style.display='flex';
+}
+
+// ---- 参内・勝利判定 ----
+// 京都を支配し、ゲート4国以上なら「参内」を宣言できる。
+// 参内を宣言した勢力が、次の自分の手番開始まで京都を保持し続ければ勝利。
+// その間に京都を奪われる/ゲート支配が4国未満になると参内は無効化される。
+function hasShogunQualify(p){
+  return findTaisho(p)==='kyoto' && gateOwned(p)>=P.gateNeed;
+}
+function checkSanpai(p){
+  if(G.over) return;
+  if(hasShogunQualify(p)){
+    if(G.sanpai[p]==='pending'){
+      G.over=true;
+      log(`<span class="win">🏯 ${PNAMES[p]} の大将が京に立ち、征夷大将軍に！ 天下統一！</span>`);
+      Audio.sfxVictory();
+      showEnd(PNAMES[p]);
+    }
+  }
+}
+function validateSanpai(){
+  for(let p=0;p<NPLAYERS;p++){
+    if(G.sanpai[p]){
+      if(!hasShogunQualify(p)){
+        log(`<span class="turn">▶ ${PNAMES[p]}の参内が崩れた（大将が京を離れたかゲート国不足）。</span>`);
+        G.sanpai[p]=null;
+      }
+    }
+  }
+}
+function tryDeclareSanpai(p){
+  if(hasShogunQualify(p) && !G.sanpai[p]){
+    G.sanpai[p]='declared';
+    log(`<span class="turn">⚑ ${PNAMES[p]} の大将が入京し参内を宣言！ 次の自手番まで京を保てば天下統一。</span>`);
+  }
+}
+function checkWin(){ validateSanpai(); for(let p=0;p<NPLAYERS;p++) tryDeclareSanpai(p); }
+function showEnd(winner){
+  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
+  m.innerHTML=`<h3>天下統一</h3><p style="font-size:16px;">${winner} の勝利。</p>
+    <p class="hint">大将を京都に入れ、周辺ゲート国4国以上を支配して上洛を果たしました。</p>
+    <button class="act" onclick="location.reload()">もう一度</button>`;
+  mb.style.display='flex';
+}
+
+// ---- 手番終了 → 経済処理 → AI ----
+document.getElementById('btnEnd').onclick=endTurn;
+// プレイヤー0（あなた）が「手番を終える」を押したとき
+function endTurn(){
+  if(G.over) return;
+  if(G.cur===0){ advanceTurn(); }
+}
+// 次のプレイヤーへ手番を進める（turnOrderの順）。AIなら自動、あなたなら入力待ち。
+function advanceTurn(){
+  if(G.over) return;
+  G.orderIdx = (G.orderIdx+1) % NPLAYERS;
+  if(G.orderIdx===0) G.turn++; // 一巡したら巡カウント
+  G.cur = G.turnOrder[G.orderIdx];
+  G.phase='idle'; G.selected=null; G.moveFrom=null; G.acted=false; G.bought=0;
+  beginTurnFor(G.cur);
+}
+// 手番開始時の共通処理（参内判定・収入・カード）
+function beginTurnFor(p){
+  validateSanpai();
+  if(G.sanpai[p]==='pending'){ checkSanpai(p); if(G.over)return; }
+  if(G.sanpai[p]==='declared'){ G.sanpai[p]='pending'; }
+  G.money[p]+=netIncome(p);
+
+  // --- 安全網：島流しが明けた(exile=0)のに大将が盤上にいない場合、確実に復帰させる ---
+  if(G.exile[p]===0 && G.exileReturn[p]){
+    if(p===0){ beginTaishoReturn(0); return; }
+    else { aiReturnTaisho(p); }
+  }
+
+  // --- 島流し中なら、この手番は行動できずスキップ ---
+  if(G.exile[p]>0){
+    G.exile[p]--;   // この手番ぶんを消化
+    log(`<span class="turn">［${PNAMES[p]}］大将は佐渡に流され、この手番は動けない（残り${G.exile[p]}手番）。</span>`);
+    render(); updateGuide();
+    if(G.exile[p]>0){
+      // まだ島流し継続 → そのまま手番終了（次の人へ）
+      if(p===0){ /* あなた：自動で手番送り */ setTimeout(()=>advanceTurn(), 900); }
+      else { setTimeout(()=>advanceTurn(), 700); }
+      return;
+    }
+    // exileがちょうど0になった → 大将を復帰させてから手番を始める
+    if(G.exileReturn[p]){
+      if(p===0){ beginTaishoReturn(0); return; }   // あなた：復帰先を選ぶUI
+      else { aiReturnTaisho(p); }                    // AI：自動復帰、その後通常行動へ進む
+    }
+  }
+
+  const drawn=drawCard(p);
+  log(`<span class="turn">天運</span>[${PNAMES[p]}]「${drawn.card.nm}」：${drawn.text}`);
+  if(p===0){
+    if(G.turn>1) log(`<span class="turn">── 第${G.turn}巡 ──</span>`);
+    render(); updateGuide();
+    showCard(drawn.card, drawn.text);
+  } else {
+    render(); updateGuide();
+    setTimeout(()=>aiTurn(p), 650);
+  }
+}
+// 引いたカードをモーダルで提示（プレイヤー用）
+function showCard(card, text){
+  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
+  m.innerHTML=`
+    <h3>🎴 天運カード</h3>
+    <div style="text-align:center;font-size:20px;color:var(--aka);margin:6px 0;font-weight:700;">${card.nm}</div>
+    <p style="text-align:center;font-size:13px;">${text}</p>
+    <button class="act" onclick="document.getElementById('modalbg').style.display='none'">あなたの手番へ</button>
+  `;
+  mb.style.display='flex';
+}
+
+// ---- 遊び方モーダル ----
+document.getElementById('btnHelp').onclick=showHelp;
+document.getElementById('btnSound').onclick=async function(){
+  if(typeof Tone==='undefined'){ this.textContent='♪ 音 利用不可'; this.disabled=true; return; }
+  try{
+    await Audio.toggle();
+    this.textContent = Audio.on ? '♪ 音 オン' : '♪ 音 オフ';
+    if(!Audio.on && !Audio.ready) this.textContent='♪ 音 利用不可';
+  }catch(e){ console.warn('音の切替に失敗',e); this.textContent='♪ 音 エラー'; }
+};
+document.getElementById('btnBuild').onclick=doBuildCastle;
+function showHelp(){
+  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
+  m.innerHTML=`
+    <h3>遊び方</h3>
+    <div style="font-size:12px;line-height:1.6;">
+    <p><b>目的：</b><b>ゲート国6つのうち4つ</b>を支配し、<b>★大将</b>を京都に入れて「参内」を宣言。次の自分の手番まで保てば<b>天下統一で勝ち</b>。大将は各勢力に1人、本国から出陣します。</p>
+    <p><b>領地の取り方（2段階）：</b>①空白国へ軍を進める（占拠するが、まだ収入なし）。②翌手番以降、その国を選んで<b>「築城」（10万両）</b>すると領地になり、石高に応じた収入が入ります。</p>
+    <p><b>軍を動かす：</b>①自分の軍がいる国をクリック → ②<b>緑に光った隣国</b>をクリック。連れていく兵科を選べます。</p>
+    <p><b>軍を雇う：</b>城のある自国を選び、右の<b>兵科ボタン</b>（1手番1隊）。</p>
+    <p><b>1手番1アクション：</b>徴募・移動/合戦・築城のうち<b>どれか1つ</b>だけ。お金は<b>0スタート</b>、まず収入を貯めましょう。</p>
+    <p><b>合戦のコツ：</b>三すくみ <b>騎馬→歩兵→弓→騎馬</b>。有利な兵科をぶつけると勝率が上がります。</p>
+    <p><b>★大将：</b>戦力に数え、いる軍は1.2倍強くなります（相性は無し）。ただし<b>大将のいる国を落とされる</b>か、<b>大将を連れた軍が攻めて負ける</b>と討死し、佐渡へ島流し2手番。復帰時に戻る国を選べます。大将を失うと上洛できないので、出しどころが大事です。</p>
+    </div>
+    <button class="act" onclick="document.getElementById('modalbg').style.display='none'; if(window._afterHelp){const f=window._afterHelp; window._afterHelp=null; f();}">とじる</button>
+  `;
+  mb.style.display='flex';
+}
+
+// ---- AI思考：1手番1アクション（pは手番プレイヤー番号 1〜3）----
+function aiTurn(p){
+  if(G.over) return;
+  if(G.exile[p]>0){
+    log(`<span class="ai">${PNAMES[p]}</span>：大将は島流し中。動けない。`);
+    render(); if(G.over)return;
+    setTimeout(advanceTurn, 400);
+    return;
+  }
+  let acted=false;
+  // === フェーズ判断 ===
+  const myCastles = castleCount(p);
+  const playerGate = Math.max(...[0,1,2,3].filter(q=>q!==p).map(q=>gateOwned(q))); // 最も上洛に近い敵のゲート数
+  const anyEnemySanpai = [0,1,2,3].some(q=>q!==p && G.sanpai[q]);
+  const playerThreat = anyEnemySanpai || playerGate>=3; // 誰かが参内中／ゲート3国以上＝危険
+  const INVADE_CASTLE_THRESHOLD = 4;
+  const phase = (playerThreat || myCastles>=INVADE_CASTLE_THRESHOLD) ? 'invade' : 'develop';
+
+  const isEnemyP=(q)=>q!==null && q!==p; // qがpの敵か
+
+  // 攻撃・進出の候補を列挙（pの兵がいる国から）
+  let cands=[];
+  Object.values(G.byid).forEach(k=>{
+    if(k.armyOwner!==p || unitsTotal(k.army)===0) return;
+    // 兵を動かせるのは城のある自領からのみ（空白地・占拠地からは動かせない）
+    if(!(k.owner===p && k.castle)) return;
+    (ADJ[k.id]||[]).forEach(aid=>{
+      const a=G.byid[aid]; if(!a) return;
+      const enemyCastle = isEnemyP(a.owner);
+      const enemyArmy = isEnemyP(a.armyOwner) && unitsTotal(a.army)>0;
+      const isEnemy = enemyCastle || enemyArmy;
+      const isEmpty = !isEnemy && !(a.armyOwner===p && unitsTotal(a.army)>0) && a.owner!==p;
+      if(a.owner===p && a.armyOwner!==null && a.armyOwner!==p) {/*自領に敵兵=防衛対象、許可*/}
+      else if(a.owner===p) return; // 自領（敵兵なし）へは動かない
+      if(!reachable(k.id,aid)) return;
+      const pr = isEnemy ? winProb(k.army,a.army,a.kyoto) : 1.0;
+      cands.push({from:k.id,to:aid,dist:gateDist(aid),empty:isEmpty,
+                  isKyoto:a.kyoto,isGate:!!a.gate,enemy:isEnemy,winp:pr});
+    });
+  });
+
+  // (a) 誰かが参内中なら阻止を最優先
+  if(!acted && anyEnemySanpai){
+    const block = cands.filter(c=>c.enemy && (c.isKyoto||c.isGate) && c.winp>=0.4)
+                       .sort((x,y)=>y.winp-x.winp)[0];
+    if(block){
+      const f=G.byid[block.from], t=G.byid[block.to];
+      log(`<span class="ai">${PNAMES[p]}</span>：参内を阻止すべく ${f.nm}→${t.nm} へ急襲！`);
+      resolveBattle(block.from,block.to,p,Math.random()<block.winp,block.winp,{...f.army},true);
+      acted=true;
+    }
+  }
+
+  // (a1) 大将の上洛：ゲート4国を確保していて大将が京都にいないなら、京都へ近づける
+  if(!acted && gateOwned(p)>=P.gateNeed){
+    const tpos=findTaisho(p);
+    if(tpos && tpos!=='kyoto'){
+      // 大将のいる国から、京都に最も近づく隣接自領または京都ゲート/京都へ動かす
+      const here=G.byid[tpos];
+      // 京都に直接入れるなら入る
+      const adjs=(ADJ[tpos]||[]);
+      // まず京都へ直接
+      if(adjs.includes('kyoto') && reachable(tpos,'kyoto')){
+        const ky=G.byid['kyoto'];
+        const def=ky.army; const defOwner=ky.armyOwner;
+        if(defOwner===null||defOwner===p||unitsTotal(def)===0){
+          // 無人の京都へ大将ごと進軍
+          ky.army={...here.army}; ky.armyOwner=p; here.army={}; here.armyOwner=null;
+          log(`<span class="ai">${PNAMES[p]}</span>：大将が京都へ進軍！`);
+          acted=true;
+        } else {
+          // 敵がいる京都を攻める（大将含む）
+          const wp=winProb(here.army,def,true);
+          if(wp>=0.45){ log(`<span class="ai">${PNAMES[p]}</span>：大将みずから京都へ攻め上る！`);
+            resolveBattle(tpos,'kyoto',p,Math.random()<wp,wp,{...here.army},true); acted=true; }
+        }
+      }
+      // 京都に隣接していなければ、京都に近づく自分の城のある隣国へ大将を移す
+      if(!acted && here.owner===p && here.castle){
+        const step=adjs.filter(a=>G.byid[a].owner===p && G.byid[a].castle && reachable(tpos,a))
+          .sort((a,b)=>gateDist(a)-gateDist(b))[0];
+        if(step && gateDist(step)<gateDist(tpos)){
+          const t=G.byid[step];
+          // 大将だけ（と少し兵）を前進。ここでは大将含む全軍を移す
+          t.army={...here.army}; t.armyOwner=p; here.army={}; here.armyOwner=null;
+          log(`<span class="ai">${PNAMES[p]}</span>：大将を${t.nm}へ前進。`);
+          acted=true;
+        }
+      }
+    }
+  }
+
+  // (a2) 築城：兵がいる城なしの土地を領地化
+  if(!acted){
+    const buildables=Object.values(G.byid).filter(k=>k.armyOwner===p && !k.castle && unitsTotal(k.army)>=1)
+      .sort((a,b)=> phase==='develop' ? (b.kk-a.kk) : (gateDist(a.id)-gateDist(b.id)) );
+    if(buildables.length && G.money[p]>=castleCostOf(buildables[0].kk)){
+      const k=buildables[0];
+      G.money[p]-=castleCostOf(k.kk); k.castle=true; k.owner=p;
+      log(`<span class="ai">${PNAMES[p]}</span>：${k.nm}（${k.kk}万石）に築城。`);
+      acted=true;
+    }
+  }
+
+  // (b) 移動・進出・攻撃
+  if(!acted){
+    if(phase==='develop'){
+      const expand = cands.filter(c=>c.empty && !c.isKyoto && !c.isGate).sort((x,y)=>x.dist-y.dist)[0]
+                       || cands.filter(c=>c.empty).sort((x,y)=>x.dist-y.dist)[0];
+      if(expand){
+        const t=G.byid[expand.to], f=G.byid[expand.from];
+        t.army={...f.army}; t.armyOwner=p; f.army={}; f.armyOwner=null;
+        log(`<span class="ai">${PNAMES[p]}</span>：${t.nm} へ進軍し国力拡大。`);
+        acted=true;
+      } else {
+        const atk=cands.filter(c=>c.enemy && c.winp>=0.55).sort((x,y)=>y.winp-x.winp)[0];
+        if(atk){
+          log(`<span class="ai">${PNAMES[p]}</span>：${G.byid[atk.from].nm}→${G.byid[atk.to].nm} へ出陣！`);
+          resolveBattle(atk.from,atk.to,p,Math.random()<atk.winp,atk.winp,{...G.byid[atk.from].army},true);
+          acted=true;
+        }
+      }
+    } else {
+      cands.sort((x,y)=>((x.isKyoto?-2:0)+(x.isGate?-1:0)+x.dist)-((y.isKyoto?-2:0)+(y.isGate?-1:0)+y.dist));
+      for(const c of cands){
+        const t=G.byid[c.to], f=G.byid[c.from];
+        if(c.empty){
+          t.army={...f.army}; t.armyOwner=p; f.army={}; f.armyOwner=null;
+          log(`<span class="ai">${PNAMES[p]}</span>：${t.nm} へ進軍。`);
+          acted=true; break;
+        } else if(c.enemy && c.winp>=0.5){
+          log(`<span class="ai">${PNAMES[p]}</span>：${f.nm}→${t.nm} へ出陣！`);
+          resolveBattle(c.from,c.to,p,Math.random()<c.winp,c.winp,{...f.army},true);
+          acted=true; break;
+        }
+      }
+    }
+  }
+
+  // (d) 何もできなければ徴募
+  if(!acted){
+    const castles=ownedKuni(p).filter(k=>k.castle)
+      .sort((a,b)=> phase==='develop' ? (b.kk-a.kk) : (gateDist(a.id)-gateDist(b.id)));
+    if(castles.length){
+      const tg=castles[0];
+      const order=['騎馬','歩兵','弓隊','鉄砲'];
+      const pick=order.find(u=>G.money[p]>=UNITS[u].cost);
+      if(pick){
+        G.money[p]-=UNITS[pick].cost; tg.army[pick]=(tg.army[pick]||0)+1; tg.armyOwner=p;
+        log(`<span class="ai">${PNAMES[p]}</span>：${tg.nm}で${pick}を徴募（${phase==='develop'?'内政':'侵攻'}）。`);
+        acted=true;
+      }
+    }
+  }
+  if(!acted) log(`<span class="ai">${PNAMES[p]}</span>：動かず。`);
+
+  render();
+  if(G.over) return;
+  // 次のプレイヤーへ
+  setTimeout(advanceTurn, 500);
+}
+// 京都までの簡易距離（BFS）
+function gateDist(id){
+  const goals=new Set([...GATE_IDS,'kyoto']);
+  let q=[[id,0]], seen=new Set([id]);
+  while(q.length){
+    const [cur,d]=q.shift();
+    if(goals.has(cur)) return d;
+    (ADJ[cur]||[]).forEach(n=>{ if(!seen.has(n)){seen.add(n);q.push([n,d+1]);} });
+  }
+  return 99;
+}
+
+// ---- 大名選択画面 ----
+function showDaimyoSelect(){
+  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
+  // 各大名の京都距離を出して難易度の目安にする
+  const distOf=(home)=>gateDist(home);
+  let cards='';
+  DAIMYO.forEach((d,i)=>{
+    const dist=distOf(d.home);
+    const diff = dist<=2?'<span style="color:#4a6b3a;">易（京に近い）</span>'
+               : dist>=8?'<span style="color:var(--aka);">難（京から遠い）</span>'
+               : '<span style="color:#8a6d2a;">中</span>';
+    cards+=`<button class="act ghost" style="display:block;width:100%;text-align:left;margin:5px 0;padding:8px 10px;"
+      onclick="chooseDaimyo(${i})">
+      <b style="font-size:15px;">${d.name}</b>（本拠：${d.homeName}）　難易度：${diff}
+      <div style="font-size:10px;color:#6b5f48;margin-top:2px;">京都ゲートまで ${dist} 国ぶん</div>
+    </button>`;
+  });
+  m.innerHTML=`
+    <h3>大名を選んでください</h3>
+    <p style="font-size:11px;color:#6b5f48;margin:2px 0 8px;">あなたが操る大名を選びます。残り3大名はAIが操作。京都に近い大名ほど上洛で有利です（手番は遠い大名から順に回ります）。</p>
+    ${cards}
+  `;
+  mb.style.display='flex';
+}
+function chooseDaimyo(i){
+  MYCHOICE=i;
+  document.getElementById('modalbg').style.display='none';
+  startGame();
+}
+function startGame(){
+  initGame();
+  document.getElementById('log').innerHTML='';
+  log(`<span class="turn">── 第1巡 ──</span>`);
+  const me=DAIMYO[MYCHOICE];
+  log(`あなたは【${me.name}】（本拠：${me.homeName}）。全58か国・4人対戦。先に上洛した者が天下を取る。`);
+  const orderNames = G.turnOrder.map(p=>PNAMES[p].replace('あなた（','').replace('）','')).join(' → ');
+  log(`手番順（京都から遠い順）：${orderNames}`);
+  render();
+  updateGuide();
+  showHelp();
+  window._afterHelp = ()=>{
+    const first=G.turnOrder[0];
+    if(first!==0){ beginTurnFor(first); }
+  };
+}
+
+// ---- 起動 ----
+showDaimyoSelect();
+</script>
+</body>
+</html>
