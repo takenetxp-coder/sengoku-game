@@ -1276,8 +1276,12 @@ function render(){
   // 参内状態
   const sanpaiEl=document.getElementById('m-sanpai');
   if(sanpaiEl){
+    const kyUI=G.byid['kyoto'];
+    const taishoInKyoto = findTaisho(0)==='kyoto';
     if(G.sanpai[0]) sanpaiEl.innerHTML='<b style="color:var(--aka)">⚑ 参内中！次の手番まで京都を死守</b>';
-    else if(G.byid.kyoto.owner===0 && gateOwned(0)>=P.gateNeed) sanpaiEl.innerHTML='<b style="color:var(--midori)">上洛資格あり</b>';
+    else if(kyUI.castle && kyUI.owner===0 && !taishoInKyoto && gateOwned(0)>=P.gateNeed) sanpaiEl.innerHTML='<b style="color:var(--midori)">★大将を京都へ！</b>';
+    else if(kyUI.armyOwner===0 && !kyUI.castle && gateOwned(0)>=P.gateNeed) sanpaiEl.innerHTML='<b style="color:var(--midori)">⚑ 京都に築城で参内！</b>';
+    else if(gateOwned(0)>=P.gateNeed) sanpaiEl.innerHTML='<b style="color:#8a6d2a">上洛資格あり（京都へ）</b>';
     else sanpaiEl.innerHTML='<span style="color:#7a6f58">―</span>';
   }
   document.getElementById('m-bought').textContent=G.acted?'行動済み（手番を終えてください）':'未行動';
@@ -1604,7 +1608,13 @@ function doBuildCastle(){
   G.acted=true; G.moveFrom=null;
   tutCheck('built');
   Audio.sfxBuild();
-  log(`<span class="you">あなた</span>：${k.nm}（${k.kk}万石）に築城。領地化し収入を得る。-${cost}万両。（行動終了）`);
+  if(k.kyoto){
+    log(`<span class="you">あなた</span>：京都に入城・築城！ 参内を宣言。次の自手番まで京都を守れば天下統一。（行動終了）`);
+  } else {
+    log(`<span class="you">あなた</span>：${k.nm}（${k.kk}万石）に築城。領地化し収入を得る。-${cost}万両。（行動終了）`);
+  }
+  checkWin();
+  if(G.over) return;
   render(); updateGuide();
 }
 function castleCostOf(kk, kuniId, ownerP){
@@ -1732,6 +1742,8 @@ function doMove(from,to,marchArmy){
   }
   G.acted=true; G.moveFrom=null; G.selected=to;
   tutCheck('moved');
+  checkWin(); // 大将が京都入城で参内判定
+  if(G.over) return;
   updateGuide(); render();
 }
 
@@ -1898,11 +1910,15 @@ function showBattleResult(r, attBefore, defBefore){
 }
 
 // ---- 参内・勝利判定 ----
-// 京都を支配し、ゲート4国以上なら「参内」を宣言できる。
-// 参内を宣言した勢力が、次の自分の手番開始まで京都を保持し続ければ勝利。
-// その間に京都を奪われる/ゲート支配が4国未満になると参内は無効化される。
+// 条件：ゲート4国以上 ＋ 京都に自分の城 ＋ 大将が京都にいる ＋ 兵士1隊以上が京都にいる
+// 参内を宣言した勢力が、次の自分の手番開始まで全条件を保持し続ければ勝利。
 function hasShogunQualify(p){
-  return findTaisho(p)==='kyoto' && gateOwned(p)>=P.gateNeed;
+  const ky=G.byid['kyoto'];
+  if(!ky.castle || ky.owner!==p) return false;
+  if(findTaisho(p)!=='kyoto') return false;
+  if(gateOwned(p)<P.gateNeed) return false;
+  const soldiers=Object.entries(ky.army||{}).filter(([u])=>u!=='大将').reduce((s,[,n])=>s+n,0);
+  return soldiers>=1;
 }
 function checkSanpai(p){
   if(G.over) return;
@@ -1919,7 +1935,7 @@ function validateSanpai(){
   for(let p=0;p<NPLAYERS;p++){
     if(G.sanpai[p]){
       if(!hasShogunQualify(p)){
-        log(`<span class="turn">▶ ${PNAMES[p]}の参内が崩れた（大将が京を離れたかゲート国不足）。</span>`);
+        log(`<span class="turn">▶ ${PNAMES[p]}の参内が崩れた（城・大将・兵士のいずれかを失ったか、ゲート国不足）。</span>`);
         G.sanpai[p]=null;
       }
     }
@@ -1928,7 +1944,7 @@ function validateSanpai(){
 function tryDeclareSanpai(p){
   if(hasShogunQualify(p) && !G.sanpai[p]){
     G.sanpai[p]='declared';
-    log(`<span class="turn">⚑ ${PNAMES[p]} の大将が入京し参内を宣言！ 次の自手番まで京を保てば天下統一。</span>`);
+    log(`<span class="turn">⚑ ${PNAMES[p]} が京都に築城・大将入城で参内を宣言！ 次の自手番まで京を保てば天下統一。</span>`);
   }
 }
 function checkWin(){ validateSanpai(); for(let p=0;p<NPLAYERS;p++) tryDeclareSanpai(p); }
@@ -1949,7 +1965,7 @@ function showEnd(winner){
     </div>`;
   m.innerHTML=`<h3>${isWin?'天下統一！':'天下取れず…'}</h3>
     <p style="font-size:16px;text-align:center;">${winner} の勝利。</p>
-    <p class="hint">${isWin?'大将を京都に入れ、周辺ゲート国4国以上を支配して上洛を果たしました。':'あなたは敗れました。次こそ天下を！'}</p>
+    <p class="hint">${isWin?'京都に築城し、周辺ゲート国4国以上を支配して上洛を果たしました。':'あなたは敗れました。次こそ天下を！'}</p>
     ${statsHtml}
     ${newAchHtml(newAch)}
     <button class="act" onclick="location.reload()">もう一度</button>`;
@@ -2060,13 +2076,13 @@ function showHelp(){
   m.innerHTML=`
     <h3>遊び方</h3>
     <div style="font-size:12px;line-height:1.6;">
-    <p><b>目的：</b><b>ゲート国6つのうち4つ</b>を支配し、<b>★大将</b>を京都に入れて「参内」を宣言。次の自分の手番まで保てば<b>天下統一で勝ち</b>。大将は各勢力に1人、本国から出陣します。</p>
+    <p><b>目的：</b><b>ゲート国6つのうち4つ</b>を支配し、京都へ<b>大将と兵士を連れて進軍・築城</b>（参内）。次の自分の手番まで保てば<b>天下統一で勝ち</b>。城・大将・兵士の全てが京都に必要です。</p>
     <p><b>領地の取り方（2段階）：</b>①空白国へ軍を進める（占拠するが、まだ収入なし）。②翌手番以降、その国を選んで<b>「築城」（10万両）</b>すると領地になり、石高に応じた収入が入ります。</p>
     <p><b>軍を動かす：</b>①自分の軍がいる国をクリック → ②<b>緑に光った隣国</b>をクリック。連れていく兵科を選べます。</p>
     <p><b>軍を雇う：</b>城のある自国を選び、右の<b>兵科ボタン</b>（1手番1隊）。</p>
     <p><b>1手番1アクション：</b>徴募・移動/合戦・築城のうち<b>どれか1つ</b>だけ。お金は<b>0スタート</b>、まず収入を貯めましょう。</p>
     <p><b>合戦のコツ：</b>三すくみ <b>騎馬→歩兵→弓→騎馬</b>。有利な兵科をぶつけると勝率が上がります。</p>
-    <p><b>★大将：</b>戦力に数え、いる軍は1.2倍強くなります（相性は無し）。ただし<b>大将のいる国を落とされる</b>か、<b>大将を連れた軍が攻めて負ける</b>と討死し、佐渡へ島流し2手番。復帰時に戻る国を選べます。大将を失うと上洛できないので、出しどころが大事です。</p>
+    <p><b>★大将：</b>戦力に数え、いる軍は1.2倍強くなります（相性は無し）。ただし<b>大将のいる国を落とされる</b>か、<b>大将を連れた軍が攻めて負ける</b>と討死し、佐渡へ島流し2手番。復帰時に戻る国を選べます。<b>大将は上洛に必須</b>です（大将＋兵士が揃って京都に築城しないと参内できません）。</p>
     </div>
     <button class="act" onclick="document.getElementById('modalbg').style.display='none'; if(window._afterHelp){const f=window._afterHelp; window._afterHelp=null; f();}">とじる</button>
   `;
@@ -2163,6 +2179,18 @@ function aiTurn(p){
         resolveBattle(coordAtk.from,coordAtk.to,p,Math.random()<coordAtk.winp,coordAtk.winp,{...f.army},true);
         acted=true;
       }
+    }
+  }
+
+  // (a0) 最優先：京都に城がなく、大将＋兵士がいてゲート4国以上なら即築城（参内宣言）
+  if(!acted && gateOwned(p)>=P.gateNeed){
+    const kyA=G.byid['kyoto'];
+    const soldierCount=Object.entries(kyA.army||{}).filter(([u])=>u!=='大将').reduce((s,[,n])=>s+n,0);
+    if(kyA.armyOwner===p && !kyA.castle && findTaisho(p)==='kyoto' && soldierCount>=1){
+      kyA.castle=true; kyA.owner=p;
+      log(`<span class="ai">${PNAMES[p]}</span>：京都に築城し参内を宣言！`);
+      checkWin(); if(G.over)return;
+      acted=true;
     }
   }
 
