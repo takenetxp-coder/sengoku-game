@@ -80,6 +80,17 @@
   .diff-easy{border-top:3px solid var(--midori);}
   .diff-normal{border-top:3px solid var(--kin);}
   .diff-hard{border-top:3px solid var(--aka);}
+
+  @media(max-width:600px){
+    .body{padding:6px 12px 20px;}
+    h2{font-size:16px; padding:3px 0 3px 10px;}
+    table{font-size:12px;}
+    th,td{padding:5px 6px;}
+    .diff-grid{grid-template-columns:1fr;}
+  }
+  .ach-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+  .ach-item{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:13px;}
+  .ach-icon{font-size:20px;}
 </style>
 </head>
 <body>
@@ -87,15 +98,15 @@
   <header>
     <h1>戦国武将ゲーム</h1>
     <div class="en">SENGOKU — リメイク版</div>
-    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル v0.7</div>
+    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル v1.3</div>
   </header>
 
   <div class="body">
 
     <section>
       <h2>このゲームは？</h2>
-      <p>1982年にタカトクトイスが発売したボードゲーム「戦国武将ゲーム」を、現代に蘇らせた4人対戦の戦国シミュレーションです。あなたは戦国大名となり、領地を広げ、軍を率い、ライバルを出し抜いて<span class="big">京都への上洛</span>を目指します。最初に京で征夷大将軍となった者が、天下を取ります。</p>
-      <p>対戦相手3人はコンピュータ（AI）が操作します。1ゲームは数十分ほど。ブラウザだけで遊べます。</p>
+      <p>1982年にタカトクトイスが発売したボードゲーム「戦国武将ゲーム」を、現代に蘇らせた6人対戦の戦国シミュレーションです。あなたは戦国大名となり、領地を広げ、軍を率い、ライバルを出し抜いて<span class="big">京都への上洛</span>を目指します。最初に京で征夷大将軍となった者が、天下を取ります。</p>
+      <p>対戦相手5人はコンピュータ（AI）が操作します。1ゲームは数十分ほど。ブラウザだけで遊べます。</p>
     </section>
 
     <section>
@@ -114,7 +125,12 @@
     <section>
       <h2>遊びはじめ</h2>
       <h3>タイトル画面</h3>
-      <p>ゲームを開くと、タイトル画面が表示されます。以前の続きがある場合は「<b>▶ 続きから</b>」ボタンも表示されます（詳しくは「セーブ・ロード」の項を参照）。</p>
+      <p>ゲームを開くと、タイトル画面が表示されます。以前の続きがある場合は「<b>▶ 続きから</b>」ボタンも表示されます。</p>
+      <ul>
+        <li>「📖 遊び方マニュアル」→ このマニュアルを別タブで開きます。</li>
+        <li>「🎮 初めての方はこちら（チュートリアル）」→ 対話式チュートリアルが始まります（後述）。</li>
+        <li>ゲームのプレイ記録がある場合は、ベストスコアと実績バッジがタイトル画面に表示されます（後述）。</li>
+      </ul>
 
       <h3>大名・難易度・速度を選ぶ</h3>
       <p>「ゲームを始める」を押すと設定画面が開きます。まずAI難易度とゲーム速度を選び、それから大名を選んでください。</p>
@@ -138,15 +154,30 @@
       <h3>ゲーム速度<span class="badge-new">NEW</span></h3>
       <p>AIの手番がどれくらい速く進むかを「速い／普通／遅い」から選べます。「速い」にするとAIの動きを素早く確認でき、「遅い」にすると何が起きているか追いやすくなります。</p>
 
-      <h3>大名を選ぶ</h3>
+      <h3>大名を選ぶ <span class="badge-new">6大名</span></h3>
       <table>
         <tr><th>大名</th><th>本拠</th><th>京都への近さ</th><th>難易度</th></tr>
         <tr><td>織田</td><td>尾張（中央）</td><td>とても近い</td><td class="adv-win">易しい</td></tr>
+        <tr><td>北条</td><td>相模（関東）</td><td>やや遠い</td><td>ふつう</td></tr>
         <tr><td>毛利</td><td>安芸（西国）</td><td>やや遠い</td><td>ふつう</td></tr>
-        <tr><td>伊達</td><td>陸奥（東北）</td><td>やや遠い</td><td>ふつう</td></tr>
+        <tr><td>伊達</td><td>陸奥（東北）</td><td>遠い</td><td class="adv-lose">難しい</td></tr>
         <tr><td>島津</td><td>薩摩（九州）</td><td>とても遠い</td><td class="adv-lose">難しい</td></tr>
+        <tr><td>長宗我部</td><td>土佐（四国）</td><td>とても遠い</td><td class="adv-lose">難しい</td></tr>
       </table>
-      <p class="cap">京都に近い大名ほど上洛が楽で有利です。腕に自信があれば、遠い島津や伊達で挑戦してみましょう。なお、京都から遠い大名ほど手番が早く回ってくる（先に動ける）ので、不利が少し和らぎます。</p>
+      <p class="cap">京都に近い大名ほど上洛が楽で有利です。腕に自信があれば、遠い島津・伊達・長宗我部で挑戦してみましょう。なお、京都から遠い大名ほど手番が早く回ってくる（先に動ける）ので、不利が少し和らぎます。</p>
+    </section>
+
+    <section>
+      <h2>チュートリアル<span class="badge-new">NEW</span></h2>
+      <p>初めて遊ぶ方向けに、<b>対話式チュートリアル</b>が用意されています。タイトル画面の「🎮 初めての方はこちら」を押すと開始します。</p>
+      <div class="box new">
+        <div class="step"><span class="num">1</span><b>自分の国をクリック</b> — 本拠地の尾張を選んで領地の操作感をつかみます。</div>
+        <div class="step"><span class="num">2</span><b>軍を徴募する</b> — 右パネルの兵科ボタンで軍を1隊雇います。</div>
+        <div class="step"><span class="num">3</span><b>手番を終える</b> — 「手番を終える▶」ボタンを押してAIに手番を渡します。</div>
+        <div class="step"><span class="num">4〜5</span><b>軍を動かす</b> — 尾張を選び、緑に光った隣国へ進軍します。</div>
+        <div class="step"><span class="num">6〜7</span><b>築城する</b> — 占拠した土地に城を建て、領地化の流れを体験します。</div>
+      </div>
+      <p>チュートリアル中はいつでも「スキップして自由にプレイ」を押せます。チュートリアルは難易度「易」・織田信長（尾張）で固定されます。</p>
     </section>
 
     <section>
@@ -158,6 +189,18 @@
         <div class="step"><span class="num">新規</span>「最初から始める」を押すと保存データが消えて新しいゲームが始まります。</div>
       </div>
       <div class="box tip"><b>メモ：</b>セーブデータはお使いのブラウザのlocalStorageに保存されます。ブラウザのキャッシュや履歴を「すべて削除」するとセーブが消える場合があります。</div>
+    </section>
+
+    <section>
+      <h2>右パネルの見かた（タブUI）<span class="badge-new">NEW</span></h2>
+      <p>画面右側のパネルは3つのタブに分かれています。国をクリックすると自動的に「選択中」タブに切り替わります。</p>
+      <table>
+        <tr><th>タブ</th><th>内容</th></tr>
+        <tr><td class="l">国力</td><td class="l">あなたの資金・石高・収入/維持費・支配国数・ゲート支配状況などを表示。</td></tr>
+        <tr><td class="l">選択中</td><td class="l">クリックした国の兵科内訳と、その国での行動（徴募・築城）ができます。</td></tr>
+        <tr><td class="l">敵勢力</td><td class="l">AI5勢力それぞれの資金・石高・ゲート支配数を一覧表示。</td></tr>
+      </table>
+      <p>パネル下部には<b>「戦況ログ」</b>が独立して表示されます。天運カードの引き結果・合戦経過・参内の動きがすべてここに流れます。</p>
     </section>
 
     <section>
@@ -196,10 +239,10 @@
       <p>一部の国には特産地があり、通常より収入が増えたり特別な効果があります。</p>
       <table>
         <tr><th>特産</th><th>効果</th></tr>
-        <tr><td>🌾 米どころ</td><td class="l">収入+50%（石高の1.5割）</td></tr>
-        <tr><td>🧂 塩</td><td class="l">収入+50%。さらに軍の維持費が毎手番-0.5万両</td></tr>
-        <tr><td>💰 商業</td><td class="l">収入+100%（石高の2割）</td></tr>
-        <tr><td>⛏ 鉱山</td><td class="l">収入+150%（石高の2.5割）</td></tr>
+        <tr><td>🌾 米どころ</td><td class="l">収入+1万両。さらに、米産地の城1か所につき軍1隊分の維持費を免除（兵糧産地の恩恵）</td></tr>
+        <tr><td>🧂 塩</td><td class="l">収入+1万両。さらに隣接する自分の城ごとに+0.5万両（補給路ボーナス）</td></tr>
+        <tr><td>💰 商業</td><td class="l">収入+3万両（商業都市の税収）</td></tr>
+        <tr><td>⛏ 鉱山</td><td class="l">収入+4万両（石見銀山など鉱山収入）。飢饉・水害の被害も軽減される</td></tr>
       </table>
 
       <div class="box tip"><b>コツ：</b>序盤は手近な国に進軍→築城を繰り返して収入の土台を作り、力を蓄えてから京都を目指すのが王道です。</div>
@@ -278,7 +321,7 @@
     </section>
 
     <section>
-      <h2>ゲーム終了時の記録<span class="badge-new">NEW</span></h2>
+      <h2>ゲーム終了時の記録</h2>
       <p>誰かが天下を取った時点で、ゲームの統計が表示されます。</p>
       <ul>
         <li><b>総手番数：</b>何巡でゲームが決着したか。</li>
@@ -287,7 +330,31 @@
         <li><b>合戦 勝/負：</b>あなたが行った合戦の勝敗数。</li>
         <li><b>大将を討った回数：</b>敵の大将を討ち取った数。</li>
       </ul>
-      <p>「もう一度」を押すとタイトル画面に戻り、新しいゲームを始められます。</p>
+      <p>また、ゲーム終了時に新しく解除された<b>実績</b>があれば、その場で通知されます。「もう一度」を押すとタイトル画面に戻ります。</p>
+    </section>
+
+    <section>
+      <h2>実績・ベストスコア記録<span class="badge-new">NEW</span></h2>
+      <p>ゲームの記録は<b>ブラウザに自動保存</b>され、タイトル画面に表示されます。天下を統一した最短手番数（ベストスコア）と、解除した実績バッジが並びます。</p>
+      <div class="box new">
+        <b>表示される情報：</b>
+        <ul style="margin-top:6px;">
+          <li>🏆 ベスト記録：最短で天下統一を達成したときの手番数</li>
+          <li>クリア回数 / 総プレイ回数</li>
+          <li>解除済み実績バッジ（全7種）</li>
+        </ul>
+      </div>
+      <h3>実績一覧</h3>
+      <div class="ach-row">
+        <div class="ach-item"><span class="ach-icon">🎌</span><div><b>初天下統一</b><br><span class="cap">初めて天下統一を達成する</span></div></div>
+        <div class="ach-item"><span class="ach-icon">⚡</span><div><b>修羅の道</b><br><span class="cap">難モードで天下統一する</span></div></div>
+        <div class="ach-item"><span class="ach-icon">🌸</span><div><b>電光石火</b><br><span class="cap">20巡以内で天下統一する</span></div></div>
+        <div class="ach-item"><span class="ach-icon">🌺</span><div><b>疾風怒濤</b><br><span class="cap">30巡以内で天下統一する</span></div></div>
+        <div class="ach-item"><span class="ach-icon">⚔️</span><div><b>百戦錬磨</b><br><span class="cap">1ゲームで合戦を10勝以上する</span></div></div>
+        <div class="ach-item"><span class="ach-icon">💀</span><div><b>首取り名人</b><br><span class="cap">敵の大将を討ち取る</span></div></div>
+        <div class="ach-item"><span class="ach-icon">🗾</span><div><b>大大名</b><br><span class="cap">一度に20国以上を支配する</span></div></div>
+      </div>
+      <p class="cap">バッジにマウスカーソルをあわせると条件が表示されます。未解除のバッジはグレーアウト表示。すべての実績を集めることを目指してみましょう！</p>
     </section>
 
     <section>
@@ -304,15 +371,29 @@
     </section>
 
     <section>
+      <h2>スマートフォンでのプレイ<span class="badge-new">NEW</span></h2>
+      <p>スマートフォン（600px以下の画面）でもプレイできます。いくつか操作の違いがあります。</p>
+      <ul>
+        <li>盤面は横にスクロールして全体を確認できます（2本指でドラッグ）。</li>
+        <li>国のポップアップは画面下部に固定表示されます。</li>
+        <li>ゲートバーのボタンは折り返して表示されます。</li>
+      </ul>
+      <div class="box tip">プレイしにくい場合は、横向き（ランドスケープ）にすると見やすくなります。</div>
+    </section>
+
+    <section>
       <h2>盤面の見方</h2>
       <ul>
         <li>国の枠の<b>色</b>＝その領地の持ち主。色がついていない国は、まだ誰の領地でもありません。
           <ul>
-            <li><span class="color-swatch" style="background:#cdd9e6;border-color:#2f4a66;"></span> 青＝あなた（織田）</li>
-            <li><span class="color-swatch" style="background:#eccdc7;border-color:#9c2a1f;"></span> 赤＝島津</li>
-            <li><span class="color-swatch" style="background:#d2dec6;border-color:#3a5a2c;"></span> 緑＝毛利</li>
-            <li><span class="color-swatch" style="background:#d8cce8;border-color:#5a3a7a;"></span> 紫＝伊達</li>
+            <li><span class="color-swatch" style="background:#cdd9e6;border-color:#2f4a66;"></span> 青＝あなた（選んだ大名）</li>
+            <li><span class="color-swatch" style="background:#eccdc7;border-color:#9c2a1f;"></span> 赤＝AI 第1勢力</li>
+            <li><span class="color-swatch" style="background:#d2dec6;border-color:#3a5a2c;"></span> 緑＝AI 第2勢力</li>
+            <li><span class="color-swatch" style="background:#d8cce8;border-color:#5a3a7a;"></span> 紫＝AI 第3勢力</li>
+            <li><span class="color-swatch" style="background:#f0dfc0;border-color:#a06010;"></span> 橙＝AI 第4勢力</li>
+            <li><span class="color-swatch" style="background:#c0dede;border-color:#1a5a5a;"></span> 青緑＝AI 第5勢力</li>
           </ul>
+          <span class="cap">（どの大名が何色になるかは、あなたが選んだ大名によって変わります）</span>
         </li>
         <li><b>赤い枠</b>の国＝京都ゲート国（上洛に必要な6国）。</li>
         <li>国の中の<b>数字</b>＝そこにいる兵の数。<b>🏯</b>＝城。</li>
@@ -325,7 +406,7 @@
 
     <footer>
       原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-      ── 天下布武の道は、汝の采配にあり ──
+      v1.3 対応マニュアル　　── 天下布武の道は、汝の采配にあり ──
     </footer>
 
   </div>
