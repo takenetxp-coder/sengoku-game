@@ -115,9 +115,10 @@
       <div class="box">
         <div class="step"><span class="num">1</span><b>京都周辺の「ゲート国」6つのうち、4つ以上を支配する。</b><br>
         <span class="cap">ゲート国＝摂津・近江・丹波・大和・河内・伊賀（赤枠の国）。4つ取ると京都への道が開きます。</span></div>
-        <div class="step"><span class="num">2</span><b>京都に大将（軍）を進め、「参内」を宣言する。</b></div>
+        <div class="step"><span class="num">2</span><b>★大将と兵士を揃えて京都へ進軍し、そこに<span style="color:var(--aka);">築城</span>する。</b><br>
+        <span class="cap">「城・大将・兵士1以上」の3つが京都に揃ったとき、参内が自動宣言されます。京都を占拠した次の手番に「築城」ボタンを押してください（大将と兵士が揃っていれば費用不要）。</span></div>
         <div class="step"><span class="num">3</span><b>次の自分の手番まで、京都を守りきる。</b><br>
-        <span class="cap">この間にライバルが京都を奪い返したり、ゲート国を崩したりすると、参内は失敗。守りきれば天下統一です。</span></div>
+        <span class="cap">城・大将・兵士・ゲート4国のいずれかを失うと参内が崩れます。守りきれば天下統一です。</span></div>
       </div>
       <div class="box warn"><b>注意：</b>参内を宣言したら、残りの全員があなたを止めにきます。最後の1手番をどう守るかが勝負の山場です。</div>
     </section>
@@ -320,16 +321,26 @@
 
     <section>
       <h2>天運カード</h2>
-      <p>手番の始めに、毎回「天運カード」を1枚引きます。豊作でお金が増えたり、飢饉で減ったり、浪人が仲間に加わって兵が増えたり——その時々の運で、状況が少し揺れます。</p>
+      <p>手番の始めに、毎回「天運カード」を1枚引きます。豊作でお金が増えたり、水害で減ったり、浪人が仲間に加わって兵が増えたり——その時々の運で、状況が少し揺れます。</p>
       <table>
-        <tr><th>カード</th><th>効果</th></tr>
-        <tr><td class="l">豊作</td><td class="l">収入+6万両</td></tr>
-        <tr><td class="l">飢饉</td><td class="l">収入-4万両</td></tr>
-        <tr><td class="l">浪人集結</td><td class="l">本拠地の兵+2</td></tr>
-        <tr><td class="l">疫病</td><td class="l">最大の軍の兵-1</td></tr>
-        <tr><td class="l">弓衆召集</td><td class="l">弓隊1隊を無料で徴募（本拠地に追加）</td></tr>
-        <tr><td class="l">鉄砲伝来</td><td class="l">鉄砲1隊を無料で徴募（本拠地に追加）</td></tr>
+        <tr><th>種類</th><th>カード名</th><th>効果</th></tr>
+        <tr><td rowspan="3" style="vertical-align:middle;color:var(--midori);font-weight:700;">収入増</td>
+            <td class="l">豊作</td><td class="l">年貢収入 +3万両</td></tr>
+        <tr><td class="l">交易</td><td class="l">港の交易収入 +2万両</td></tr>
+        <tr><td class="l">献上</td><td class="l">地侍からの献上 +1万両</td></tr>
+        <tr><td rowspan="3" style="vertical-align:middle;color:var(--aka);font-weight:700;">出費</td>
+            <td class="l">飢饉</td><td class="l">施米 -3万両（⛏鉱山所持なら軽減）</td></tr>
+        <tr><td class="l">水害</td><td class="l">普請費用 -2万両（⛏鉱山所持なら軽減）</td></tr>
+        <tr><td class="l">祭礼</td><td class="l">祭礼費用 -1万両（⛏鉱山所持なら軽減）</td></tr>
+        <tr><td rowspan="4" style="vertical-align:middle;color:var(--ao);font-weight:700;">兵増強</td>
+            <td class="l">浪人合流</td><td class="l">前線の城に歩兵+1</td></tr>
+        <tr><td class="l">良馬入手</td><td class="l">前線の城に騎馬+1</td></tr>
+        <tr><td class="l">弓衆召集</td><td class="l">前線の城に弓隊+1</td></tr>
+        <tr><td class="l">鉄砲伝来</td><td class="l">前線の城に鉄砲+1</td></tr>
+        <tr><td style="color:#888;font-weight:700;">無事</td>
+            <td class="l">平穏・静謐</td><td class="l">何も起きない</td></tr>
       </table>
+      <div class="box tip"><b>メモ：</b>「前線の城」とは、あなたの支配城のうち京都に最も近いものです。兵科カードはそこに自動で追加されます。城がない場合は効果なし。また⛏鉱山を持っていると飢饉・水害・祭礼の出費が半減します。</div>
     </section>
 
     <section>
