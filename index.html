@@ -30,6 +30,58 @@
   .layout{display:grid; grid-template-columns: 1fr 320px; gap:12px;}
   @media(max-width:900px){ .layout{grid-template-columns:1fr;} }
 
+  /* ===== モバイル対応 (≤600px) ===== */
+  @media(max-width:600px){
+    /* ヘッダー */
+    header{ padding:10px 12px 8px; }
+    header h1{ font-size:18px; letter-spacing:2px; }
+    header .sub{ display:none; }
+    header .ver{ display:none; }
+
+    /* ラッパー・パネル */
+    .wrap{ padding:6px; }
+    .panel{ padding:6px; }
+    .panel h2{ font-size:14px; padding:3px 0 3px 8px; margin-bottom:8px; }
+
+    /* 地図エリア：横スクロール・縦は55vhに制限 */
+    #map{
+      overflow-x:auto; overflow-y:auto;
+      max-height:55vh;
+      -webkit-overflow-scrolling:touch;
+      touch-action:pan-x pan-y;
+    }
+
+    /* 凡例を折りたたむ */
+    .legend{ font-size:9px; gap:6px; }
+
+    /* アクションバー：ボタンを大きく */
+    #btnEnd{ min-height:48px; font-size:15px; }
+    #btnHelp,#btnSound{ min-height:44px; padding:6px 10px; font-size:12px; }
+
+    /* タブバー */
+    .tab-btn{ font-size:12px; padding:9px 2px; }
+
+    /* ログ */
+    #log{ max-height:180px; }
+
+    /* モーダル */
+    .modal{ max-width:95vw; padding:12px; }
+    .modal h3{ font-size:16px; }
+
+    /* 大名選択ボタン */
+    .ucard{ font-size:12px; padding:8px 10px; }
+
+    /* 国ポップアップ：モバイルでは下部固定 */
+    #map-popup{
+      position:fixed !important;
+      left:8px !important; right:8px !important;
+      top:auto !important; bottom:72px !important;
+      max-width:calc(100vw - 16px) !important;
+      min-width:0 !important;
+      width:auto !important;
+    }
+  }
+
   .panel{background:var(--paper); border:1px solid var(--line); border-radius:3px; padding:10px;}
   .panel h2{
     font-size:13px; margin:0 0 8px; letter-spacing:2px; color:var(--sumi);
@@ -97,6 +149,29 @@
   .owner2{color:#4a6b3a;} .owner3{color:#5a3a7a;}
 
   .legend{display:flex; gap:12px; flex-wrap:wrap; font-size:10px; color:#5a4f3a; margin-top:6px;}
+
+  /* ---- タブUI ---- */
+  .tab-bar{display:flex; border-bottom:2px solid var(--line); margin-bottom:10px;}
+  .tab-btn{
+    flex:1; background:none; border:none; border-bottom:3px solid transparent;
+    padding:7px 2px; font-size:11px; cursor:pointer; color:#7a6e58;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing:0.5px;
+    margin-bottom:-2px; transition:color 0.15s, background 0.15s; position:relative;
+  }
+  .tab-btn.active{border-bottom-color:var(--aka); color:var(--sumi); font-weight:700;}
+  .tab-btn:hover:not(.active){background:var(--paper2); color:var(--sumi);}
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+  .tab-badge{
+    display:none; position:absolute; top:3px; right:4px;
+    background:var(--aka); color:#fff; border-radius:8px;
+    font-size:9px; padding:0 4px; line-height:14px; font-family:sans-serif; font-weight:700;
+  }
+  .tab-btn.active .tab-badge{display:none !important;}
+  #tab-army-title{
+    font-size:13px; font-weight:700; letter-spacing:1px; color:var(--sumi);
+    margin:0 0 8px; border-left:4px solid var(--aka); padding-left:8px;
+  }
   .legend span{display:inline-flex; align-items:center; gap:3px;}
   .sw{width:11px; height:11px; display:inline-block; border:1px solid var(--line);}
 
@@ -169,6 +244,7 @@
     cursor:grab; user-select:none;}
   #map-popup.dragging .pp-title{cursor:grabbing;}
   #map-popup .pp-drag-hint{font-size:8px; color:#9a8f7a; position:absolute; bottom:3px; right:6px;}
+  @media(max-width:600px){ #map-popup .pp-drag-hint{ display:none; } }
   #map-popup .pp-close{
     position:absolute; top:4px; right:7px;
     cursor:pointer; font-size:15px; color:#7a6f58; line-height:1;
@@ -273,7 +349,7 @@
   <button class="ts-manual" onclick="window.open('manual.html','_blank')">📖 遊び方マニュアル</button>
   <div class="ts-credit">
     原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-    <span class="ts-ver">v0.8 — AI協調強化（v32）</span>
+    <span class="ts-ver">v1.0 — モバイル対応（v35）</span>
   </div>
 </div>
 
@@ -281,7 +357,7 @@
   <header>
     <h1>戦国武将ゲーム</h1>
     <span class="sub">リメイク版 ｜ ルール検証プロトタイプ</span>
-    <span class="ver">v0.8 — AI協調強化（v32）</span>
+    <span class="ver">v1.0 — モバイル対応（v35）</span>
   </header>
 
   <div class="layout">
@@ -306,37 +382,49 @@
       </div>
     </div>
 
-    <!-- RIGHT: status -->
+    <!-- RIGHT: status (tabbed) -->
     <div>
       <div class="panel">
-        <h2>国力 ｜ あなた</h2>
-        <div class="stat me0"><span>資金</span><b id="m-money">―</b></div>
-        <div class="stat me0"><span>総石高</span><b id="m-koku">―</b></div>
-        <div class="stat me0"><span>収入/維持（毎手番）</span><b id="m-income">―</b></div>
-        <div class="stat me0"><span>支配国 / 城</span><b id="m-kuni">―</b></div>
-        <div class="stat me0"><span>京都ゲート支配</span><b id="m-gate">―</b></div>
-        <div class="stat me0"><span>参内</span><span id="m-sanpai">―</span></div>
-        <div class="gatebar" id="gatebar0"></div>
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="kokuryoku" id="tbtn-kokuryoku">国力</button>
+          <button class="tab-btn" data-tab="army" id="tbtn-army" style="position:relative;">選択中<span class="tab-badge" id="badge-army"></span></button>
+          <button class="tab-btn" data-tab="enemy" id="tbtn-enemy">敵勢力</button>
+        </div>
+
+        <!-- 国力タブ -->
+        <div class="tab-content active" id="tab-kokuryoku">
+          <div class="stat me0"><span>資金</span><b id="m-money">―</b></div>
+          <div class="stat me0"><span>総石高</span><b id="m-koku">―</b></div>
+          <div class="stat me0"><span>収入/維持（毎手番）</span><b id="m-income">―</b></div>
+          <div class="stat me0"><span>支配国 / 城</span><b id="m-kuni">―</b></div>
+          <div class="stat me0"><span>京都ゲート支配</span><b id="m-gate">―</b></div>
+          <div class="stat me0"><span>参内</span><span id="m-sanpai">―</span></div>
+          <div class="gatebar" id="gatebar0"></div>
+        </div>
+
+        <!-- 選択中タブ -->
+        <div class="tab-content" id="tab-army">
+          <div id="army-detail-title" style="font-size:13px;font-weight:700;letter-spacing:1px;color:var(--sumi);margin:0 0 8px;border-left:4px solid var(--aka);padding-left:8px;">選択中の国</div>
+          <div id="army-detail">国をクリックすると、その国の兵科内訳が見られます（敵国の偵察にも）。</div>
+          <div style="border-top:1px solid var(--line);margin:8px 0;"></div>
+          <p class="hint" id="armyhint">城のある自国を選ぶと、その国で軍を1隊徴募できます（1手番に1隊）。</p>
+          <div class="army-grid" id="armygrid"></div>
+          <button class="act ghost" id="btnBuild" style="margin-top:8px;">この国に築城（10万両）</button>
+          <div class="stat" style="margin-top:6px;"><span>この手番</span><b id="m-bought">未行動</b></div>
+        </div>
+
+
+        <!-- 敵勢力タブ -->
+        <div class="tab-content" id="tab-enemy">
+          <div id="ai-panels"></div>
+        </div>
+
       </div>
 
-      <div class="panel" style="margin-top:10px;">
-        <h2 id="army-detail-title">選択中の国</h2>
-        <div id="army-detail">国をクリックすると、その国の兵科内訳が見られます（敵国の偵察にも）。</div>
-        <div style="border-top:1px solid var(--line);margin:8px 0;"></div>
-        <p class="hint" id="armyhint">城のある自国を選ぶと、その国で軍を1隊徴募できます（1手番に1隊）。</p>
-        <div class="army-grid" id="armygrid"></div>
-        <button class="act ghost" id="btnBuild" style="margin-top:8px;">この国に築城（10万両）</button>
-        <div class="stat" style="margin-top:6px;"><span>この手番</span><b id="m-bought">未行動</b></div>
-      </div>
-
+      <!-- 独立ログパネル -->
       <div class="panel" style="margin-top:10px;">
         <h2>戦況ログ</h2>
         <div id="log"></div>
-      </div>
-
-      <div class="panel" style="margin-top:10px;">
-        <h2>敵勢力</h2>
-        <div id="ai-panels"></div>
       </div>
     </div>
   </div>
@@ -348,7 +436,7 @@
   <div id="pp-title" class="pp-title" style="cursor:grab;"></div>
   <div id="pp-body"></div>
   <button class="pp-close" onclick="closeMapPopup()" style="position:absolute;top:4px;right:6px;background:none;border:none;cursor:pointer;font-size:14px;color:#6b5f48;padding:0;line-height:1;">✕</button>
-  <div class="pp-drag-hint">ドラッグで移動</div>
+  <div class="pp-drag-hint" id="pp-drag-hint">ドラッグで移動</div>
 </div>
 <div class="modal-bg" id="modalbg">
   <div class="modal" id="modal"></div>
@@ -969,6 +1057,7 @@ function render(){
       (mk?`<div class="mk">${mk}</div>`:'')+
       castleSVG + armyBadge + taishoBadge;
     el.onclick=(e)=>{e.stopPropagation();clickKuni(k.id,e);};
+    el.addEventListener('touchstart',(e)=>{e.stopPropagation();},{ passive:true });
     map.appendChild(el);
   });
   // status player
@@ -1123,14 +1212,18 @@ function showMapPopup(id, evt){
   const emptyTxt=(!soldiers&&!hasTaisho(k.army))?'<div style="color:#7a6f58;margin-top:3px;">兵なし</div>':'';
   bodyEl.innerHTML=`<div style="color:#6b5f48;margin-bottom:2px;">${ownerTxt}</div>${castleLine}${taishoLine}${grid}${emptyTxt}`;
 
-  // 位置決め：クリック座標の右下、画面端を超えないようにクランプ
+  // 位置決め：モバイルはCSS固定、PCはクリック座標右下
   popup.style.display='block';
-  const pw=popup.offsetWidth||210, ph=popup.offsetHeight||160;
-  const vw=window.innerWidth, vh=window.innerHeight;
-  let lx=evt.clientX+12, ly=evt.clientY+12;
-  if(lx+pw>vw-8) lx=evt.clientX-pw-8;
-  if(ly+ph>vh-8) ly=evt.clientY-ph-8;
-  popup.style.left=lx+'px'; popup.style.top=ly+'px';
+  if(window.innerWidth > 600 && evt){
+    const pw=popup.offsetWidth||210, ph=popup.offsetHeight||160;
+    const vw=window.innerWidth, vh=window.innerHeight;
+    const cx=evt.clientX||(evt.touches?.[0]?.clientX||0);
+    const cy=evt.clientY||(evt.touches?.[0]?.clientY||0);
+    let lx=cx+12, ly=cy+12;
+    if(lx+pw>vw-8) lx=cx-pw-8;
+    if(ly+ph>vh-8) ly=cy-ph-8;
+    popup.style.left=lx+'px'; popup.style.top=ly+'px';
+  }
 }
 function closeMapPopup(){
   const p=document.getElementById('map-popup'); if(p) p.style.display='none';
@@ -1194,6 +1287,7 @@ function clickKuni(id,evt){
     return; // returnMode中は他の操作を全て無効
   }
   if(evt) showMapPopup(id, evt); // ポップアップは常に表示（AI手番・終了後も閲覧可）
+  switchTab('army'); // 国クリック→選択中タブへ自動切り替え
   if(G.cur!==0||G.over) return;
   const k=G.byid[id];
 
@@ -1723,6 +1817,20 @@ function showCard(card, text){
 
 // ---- 遊び方モーダル ----
 document.getElementById('btnHelp').onclick=showHelp;
+// ---- タブ切り替え ----
+let _tabLogUnread=0;
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active', c.id==='tab-'+name));
+  if(name==='army'){
+    const badge=document.getElementById('badge-army');
+    if(badge){ badge.textContent='0'; badge.style.display='none'; }
+  }
+}
+document.querySelectorAll('.tab-btn').forEach(b=>{
+  b.onclick=()=>switchTab(b.dataset.tab);
+});
+
 document.getElementById('btnSound').onclick=async function(){
   if(typeof Tone==='undefined'){ this.textContent='♪ 音 利用不可'; this.disabled=true; return; }
   try{
