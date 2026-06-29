@@ -24,9 +24,8 @@
   header h1{margin:0; font-size:30px; letter-spacing:6px; font-weight:700;}
   header .en{font-size:12px; letter-spacing:3px; color:#f0d9a0; margin-top:4px;}
   header .lead{font-size:13px; margin-top:10px; color:#f5e6c8; letter-spacing:1px;}
-  header .ver{font-size:11px; color:#f0d9a0; margin-top:6px; display:block;}
   .body{background:var(--paper); padding:8px 24px 24px;}
-  section{margin:26px 0; }
+  section{margin:26px 0;}
   h2{
     font-size:19px; letter-spacing:2px; color:var(--sumi); margin:0 0 12px;
     border-left:6px solid var(--aka); padding:4px 0 4px 12px; background:var(--paper2);
@@ -45,7 +44,7 @@
   }
   .tip{border-left:4px solid var(--kin); background:#fbf5e6;}
   .warn{border-left:4px solid var(--aka); background:#fbeae6;}
-  .info{border-left:4px solid var(--ao); background:#edf2f8;}
+  .new{border-left:4px solid var(--midori); background:#f0f7ec;}
   table{width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; background:#fff;}
   th,td{border:1px solid var(--line); padding:7px 9px; text-align:center;}
   th{background:var(--paper2); letter-spacing:1px;}
@@ -66,16 +65,21 @@
   footer{text-align:center; color:#9a8f7a; font-size:12px; padding:20px;}
   .pill{display:inline-block; background:var(--paper2); border:1px solid var(--line);
     border-radius:12px; padding:1px 10px; font-size:13px; margin:2px;}
-  .mk-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0;}
-  .mk-card{background:#fff; border:1px solid var(--line); border-radius:6px; padding:10px 14px;}
-  .mk-card .icon{font-size:22px; display:block; margin-bottom:4px;}
-  .mk-card b{color:var(--sumi);}
-  .mk-card p{margin:4px 0 0; font-size:13px; color:#4a3f2f;}
-  .new-badge{
-    display:inline-block; font-size:10px; background:var(--aka); color:#fff;
-    border-radius:3px; padding:1px 5px; margin-left:6px; vertical-align:middle;
-    letter-spacing:0.5px;
+  .badge-new{
+    display:inline-block; background:var(--midori); color:#fff;
+    border-radius:4px; font-size:10px; padding:1px 6px; letter-spacing:1px;
+    vertical-align:middle; margin-left:6px; font-family:sans-serif;
   }
+  .color-swatch{
+    display:inline-block; width:14px; height:14px; border-radius:2px;
+    border:1px solid #888; vertical-align:middle; margin-right:4px;
+  }
+  .diff-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0;}
+  .diff-card{border:1px solid var(--line); border-radius:4px; padding:8px 10px; background:#fff; text-align:center;}
+  .diff-card b{display:block; font-size:15px; margin-bottom:4px;}
+  .diff-easy{border-top:3px solid var(--midori);}
+  .diff-normal{border-top:3px solid var(--kin);}
+  .diff-hard{border-top:3px solid var(--aka);}
 </style>
 </head>
 <body>
@@ -83,8 +87,7 @@
   <header>
     <h1>戦国武将ゲーム</h1>
     <div class="en">SENGOKU — リメイク版</div>
-    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル</div>
-    <span class="ver">v0.3 — 機能拡張版（v27）対応</span>
+    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル v0.7</div>
   </header>
 
   <div class="body">
@@ -110,8 +113,32 @@
 
     <section>
       <h2>遊びはじめ</h2>
+      <h3>タイトル画面</h3>
+      <p>ゲームを開くと、タイトル画面が表示されます。以前の続きがある場合は「<b>▶ 続きから</b>」ボタンも表示されます（詳しくは「セーブ・ロード」の項を参照）。</p>
+
+      <h3>大名・難易度・速度を選ぶ</h3>
+      <p>「ゲームを始める」を押すと設定画面が開きます。まずAI難易度とゲーム速度を選び、それから大名を選んでください。</p>
+
+      <h3>AI難易度<span class="badge-new">NEW</span></h3>
+      <div class="diff-grid">
+        <div class="diff-card diff-easy">
+          <b>易</b>
+          <span class="cap">AIが甘め。攻めが消極的で、参内阻止も遅い。はじめてプレイするときに。</span>
+        </div>
+        <div class="diff-card diff-normal">
+          <b>普通</b>
+          <span class="cap">標準的なAI。バランスよく内政と進軍を行い、参内もきちんと阻止しにきます。</span>
+        </div>
+        <div class="diff-card diff-hard">
+          <b>難</b>
+          <span class="cap">AIが積極的。ゲート2国以上でも脅威と判断し、あなたを集中的に狙います。</span>
+        </div>
+      </div>
+
+      <h3>ゲーム速度<span class="badge-new">NEW</span></h3>
+      <p>AIの手番がどれくらい速く進むかを「速い／普通／遅い」から選べます。「速い」にするとAIの動きを素早く確認でき、「遅い」にすると何が起きているか追いやすくなります。</p>
+
       <h3>大名を選ぶ</h3>
-      <p>ゲームを開くと、4人の大名から1人を選びます。</p>
       <table>
         <tr><th>大名</th><th>本拠</th><th>京都への近さ</th><th>難易度</th></tr>
         <tr><td>織田</td><td>尾張（中央）</td><td>とても近い</td><td class="adv-win">易しい</td></tr>
@@ -120,6 +147,17 @@
         <tr><td>島津</td><td>薩摩（九州）</td><td>とても遠い</td><td class="adv-lose">難しい</td></tr>
       </table>
       <p class="cap">京都に近い大名ほど上洛が楽で有利です。腕に自信があれば、遠い島津や伊達で挑戦してみましょう。なお、京都から遠い大名ほど手番が早く回ってくる（先に動ける）ので、不利が少し和らぎます。</p>
+    </section>
+
+    <section>
+      <h2>中断・再開（セーブ/ロード）<span class="badge-new">NEW</span></h2>
+      <p>ゲームは各手番の始まりに<b>自動でセーブ</b>されます。ブラウザを閉じても、次に開けば続きから再開できます。</p>
+      <div class="box new">
+        <div class="step"><span class="num">中断</span>いつでもブラウザを閉じて大丈夫です。ゲームは自動的に保存されています。</div>
+        <div class="step"><span class="num">再開</span>次にゲームを開くと、タイトル画面に「<b>▶ 続きから</b>」ボタンが現れます。クリックすれば中断した手番から再開します。</div>
+        <div class="step"><span class="num">新規</span>「最初から始める」を押すと保存データが消えて新しいゲームが始まります。</div>
+      </div>
+      <div class="box tip"><b>メモ：</b>セーブデータはお使いのブラウザのlocalStorageに保存されます。ブラウザのキャッシュや履歴を「すべて削除」するとセーブが消える場合があります。</div>
     </section>
 
     <section>
@@ -143,7 +181,6 @@
         </ul>
       </div>
       <div class="box warn"><b>大事なルール：</b>兵を動かせるのは<b>城のある領地から</b>だけです。空き地に進軍した兵や、敵から奪ったばかりの土地の兵は、<b>そこに築城するまで次に動けません</b>。前に進むには、一歩ずつ土地を固めながら攻め上がります。</div>
-      <div class="box info"><b>手番スキップの確認：</b>何も行動せずに「手番を終える」を押すと、確認ダイアログが表示されます。本当にスキップするか、それとも行動するかを選べます。<span class="new-badge">NEW</span></div>
     </section>
 
     <section>
@@ -154,35 +191,18 @@
         <li>空き地に兵を進めただけでは収入は入りません。<b>築城して初めて</b>領地となり、収入源になります。</li>
         <li>築城の費用は、その国の石高と同じ額（例：10万石の国なら10万両）。高石高の国は強力ですが、城を建てるのも高くつきます。</li>
       </ul>
-      <div class="box tip"><b>コツ：</b>序盤は手近な国に進軍→築城を繰り返して収入の土台を作り、力を蓄えてから京都を目指すのが王道です。</div>
-    </section>
 
-    <section>
-      <h2>特産地の効果 <span class="new-badge">NEW</span></h2>
-      <p>地図上に絵文字で示された<b>特産地</b>は、その国を城ごと保有すると特別な恩恵をもたらします。特産はそれぞれ効果が異なり、戦略の軸になります。</p>
-      <div class="mk-grid">
-        <div class="mk-card">
-          <span class="icon">🌾</span>
-          <b>米どころ</b>
-          <p>米産地1か所につき、軍1隊分の<b>維持費を免除</b>。大軍を長く養えるようになります。</p>
-        </div>
-        <div class="mk-card">
-          <span class="icon">🧂</span>
-          <b>塩の産地</b>
-          <p>収入+1に加え、隣接する自城すべての収入が<b>+0.5</b>ずつ増えます。領土を繋げるほど効果大。</p>
-        </div>
-        <div class="mk-card">
-          <span class="icon">💰</span>
-          <b>商業都市</b>
-          <p>収入<b>+3</b>。さらに商業都市またはその隣接地への<b>築城費用が20%引き</b>になります。</p>
-        </div>
-        <div class="mk-card">
-          <span class="icon">⛏</span>
-          <b>金山（鉱山）</b>
-          <p>収入<b>+4</b>。さらに飢饉・水害・祭礼などの<b>天運カードの被害が半減</b>します。</p>
-        </div>
-      </div>
-      <div class="box tip"><b>戦略メモ：</b>🌾米は大軍向き、💰商は前線拡大向き、⛏金は安定型——特産地の組み合わせで、自分なりの経営スタイルを作りましょう。</div>
+      <h3>特産地の効果</h3>
+      <p>一部の国には特産地があり、通常より収入が増えたり特別な効果があります。</p>
+      <table>
+        <tr><th>特産</th><th>効果</th></tr>
+        <tr><td>🌾 米どころ</td><td class="l">収入+50%（石高の1.5割）</td></tr>
+        <tr><td>🧂 塩</td><td class="l">収入+50%。さらに軍の維持費が毎手番-0.5万両</td></tr>
+        <tr><td>💰 商業</td><td class="l">収入+100%（石高の2割）</td></tr>
+        <tr><td>⛏ 鉱山</td><td class="l">収入+150%（石高の2.5割）</td></tr>
+      </table>
+
+      <div class="box tip"><b>コツ：</b>序盤は手近な国に進軍→築城を繰り返して収入の土台を作り、力を蓄えてから京都を目指すのが王道です。</div>
     </section>
 
     <section>
@@ -196,22 +216,29 @@
         <b>鉄砲</b> は 騎馬・歩兵 に強い（弓には弱い）<br>
         <b>大砲</b> は 密集に強いが 騎馬に弱い
       </div>
+
       <h3>兵科の一覧</h3>
       <table>
         <tr><th>兵科</th><th>雇う費用</th><th>強い相手</th><th>弱い相手</th></tr>
         <tr><td class="unit">歩兵</td><td>2万両</td><td class="adv-win">弓隊</td><td class="adv-lose">騎馬</td></tr>
-        <tr><td class="unit">弓隊</td><td>2万両</td><td class="adv-win">騎馬・鉄砲</td><td class="adv-lose">歩兵</td></tr>
+        <tr><td class="unit">弓隊</td><td>2万両</td><td class="adv-win">騎馬</td><td class="adv-lose">歩兵</td></tr>
         <tr><td class="unit">騎馬</td><td>2万両</td><td class="adv-win">歩兵・大砲</td><td class="adv-lose">弓隊</td></tr>
         <tr><td class="unit">鉄砲</td><td>3万両</td><td class="adv-win">騎馬・歩兵</td><td class="adv-lose">弓隊</td></tr>
         <tr><td class="unit">大砲</td><td>3万両</td><td class="adv-win">歩兵</td><td class="adv-lose">騎馬</td></tr>
       </table>
+
+      <h3>城の防衛効果<span class="badge-new">NEW</span></h3>
+      <p>城は攻め落とされない限り、<b>兵力2の中立ユニット</b>として戦いに加わります。城のある国を守るときは、城それ自体が守備側の戦力になるため、城なしの土地より格段に守りやすくなります。城を持つ相手に攻め込むときは、城の分だけ余計に強力な軍が必要です。</p>
+      <div class="box tip"><b>ポイント：</b>敵の城を落とすには、相手の兵 + 城の守り（2）を合わせた戦力を上回る必要があります。まず敵の兵をじわじわ削り、兵が減ってから城ごと攻め落とすのが効率的です。</div>
+
       <h3>勝敗の決まり方</h3>
       <ul>
         <li>勝率は「兵科の相性」と「兵の数」で決まります。出陣前に勝率が表示されます。</li>
         <li>有利な兵科をぶつけ、兵の数で上回るほど勝ちやすくなります。</li>
         <li>ただし、どんなに不利でも最低1割は勝つ見込みがあります。<b>運の要素も残っている</b>ので、最後まで諦めないこと。</li>
       </ul>
-      <div class="box tip"><b>偵察のすすめ：</b>敵の国をクリックすると、その国に何の兵科が何隊いるか見られます（兵科内訳ポップアップ）。相手の編成を見てから、刺さる兵科を揃えて攻めましょう。</div>
+      <div class="box tip"><b>偵察のすすめ：</b>敵の国をクリックすると、その国に何の兵科が何隊いるか見られます。相手の編成を見てから、刺さる兵科を揃えて攻めましょう。</div>
+
       <h3>合戦の結果</h3>
       <ul>
         <li><b>勝つと：</b>相手の城は落城し、その土地を占拠します。改めて築城すれば自分の領地になります。</li>
@@ -221,52 +248,84 @@
     </section>
 
     <section>
+      <h2>大将のルール</h2>
+      <p>各勢力にひとりいる「<b>★ 大将</b>」は、いる軍の戦力を1.2倍に高める特別な存在です。ただし、大将には特別なリスクもあります。</p>
+      <ul>
+        <li>大将のいる国が敵に落とされるか、大将を連れた軍で攻めて負けると、大将は<b>佐渡へ島流し（2手番動けない）</b>になります。</li>
+        <li>大将を失うと上洛ができないので、出しどころが重要です。</li>
+      </ul>
+
+      <h3>島流しからの帰還<span class="badge-new">NEW</span></h3>
+      <p>島流しの期間が明けると、大将を自分の領地のどこかに戻せます。帰還先を選ぶとき、地図上の候補地が<b>金色に点滅</b>します。その国をクリックして帰還先を選んでください。モーダルが出ないので地図全体を見ながら選べます。</p>
+
+      <h3>帰還先の制限<span class="badge-new">NEW</span></h3>
+      <p>帰還先には制約があります。<b>敵の城のある国に隣接している自領には、大将を戻せません</b>。敵の目の前に丸腰で現れると、すぐに再び討ち取られてしまうためです。</p>
+      <div class="box warn">候補地がどこにもない場合（全領地が敵城隣接の場合）は、例外として本拠地に強制帰還します。</div>
+    </section>
+
+    <section>
       <h2>天運カード</h2>
-      <p>手番の始めに、毎回「天運カード」を1枚引きます。豊作でお金が増えたり、飢饉で減ったり、浪人が仲間に加わって兵が増えたり——その時々の運で、状況が少し揺れます。大きく勝敗を左右はしませんが、流れを変えるきっかけになります。</p>
-      <h3>カードの種類（主なもの）</h3>
+      <p>手番の始めに、毎回「天運カード」を1枚引きます。豊作でお金が増えたり、飢饉で減ったり、浪人が仲間に加わって兵が増えたり——その時々の運で、状況が少し揺れます。</p>
       <table>
         <tr><th>カード</th><th>効果</th></tr>
-        <tr><td>豊作</td><td class="l">収入増加</td></tr>
-        <tr><td>飢饉</td><td class="l">お金が減る（⛏金山で被害半減）</td></tr>
-        <tr><td>水害</td><td class="l">お金が減る（⛏金山で被害半減）</td></tr>
-        <tr><td>祭礼</td><td class="l">お金が少し減る（⛏金山で被害半減）</td></tr>
-        <tr><td>浪人参集</td><td class="l">歩兵が最前線に加わる</td></tr>
-        <tr><td>馬廻増強</td><td class="l">騎馬が最前線に加わる</td></tr>
-        <tr><td>弓衆召集 <span class="new-badge">NEW</span></td><td class="l">弓隊が最前線に加わる</td></tr>
-        <tr><td>鉄砲伝来 <span class="new-badge">NEW</span></td><td class="l">鉄砲が最前線に加わる</td></tr>
-        <tr><td>名馬献上</td><td class="l">大将の機動力が一時上がる</td></tr>
-        <tr><td>秘薬到来</td><td class="l">島流し中の大将が早期帰還</td></tr>
+        <tr><td class="l">豊作</td><td class="l">収入+6万両</td></tr>
+        <tr><td class="l">飢饉</td><td class="l">収入-4万両</td></tr>
+        <tr><td class="l">浪人集結</td><td class="l">本拠地の兵+2</td></tr>
+        <tr><td class="l">疫病</td><td class="l">最大の軍の兵-1</td></tr>
+        <tr><td class="l">弓衆召集</td><td class="l">弓隊1隊を無料で徴募（本拠地に追加）</td></tr>
+        <tr><td class="l">鉄砲伝来</td><td class="l">鉄砲1隊を無料で徴募（本拠地に追加）</td></tr>
       </table>
     </section>
 
     <section>
-      <h2>盤面の見方</h2>
+      <h2>ゲーム終了時の記録<span class="badge-new">NEW</span></h2>
+      <p>誰かが天下を取った時点で、ゲームの統計が表示されます。</p>
       <ul>
-        <li>国の枠の<b>色</b>＝その領地の持ち主（あなたは青）。色がついていない国は、まだ誰の領地でもありません。</li>
-        <li><b>赤い枠</b>の国＝京都ゲート国（上洛に必要な6国）。</li>
-        <li>国の中の<b>数字</b>＝そこにいる兵の数。<b>🏯</b>＝城。</li>
-        <li>絵文字＝特産（🌾米どころ・🧂塩・💰商業・⛏鉱山）。詳しい効果は「特産地の効果」の章を参照。</li>
-        <li>国をクリックすると、<b>地図上にポップアップ</b>が表示され、兵科の内訳を確認できます。ポップアップはタイトル部分をドラッグして移動できます。<span class="new-badge">NEW</span></li>
-        <li>AIが攻撃してきたときは<b>ポップアップで結果が通知</b>されます。確認ボタンを押すまで次のAIの手番は進みません。<span class="new-badge">NEW</span></li>
+        <li><b>総手番数：</b>何巡でゲームが決着したか。</li>
+        <li><b>AI難易度：</b>プレイ時の設定。</li>
+        <li><b>あなたの最大支配国数：</b>ゲーム中に最も多く支配した国の数。</li>
+        <li><b>合戦 勝/負：</b>あなたが行った合戦の勝敗数。</li>
+        <li><b>大将を討った回数：</b>敵の大将を討ち取った数。</li>
       </ul>
+      <p>「もう一度」を押すとタイトル画面に戻り、新しいゲームを始められます。</p>
     </section>
 
     <section>
       <h2>勝つためのヒント</h2>
       <ul>
         <li><b>序盤は内政。</b>欲張って京都へ急ぐより、手近な国を築城して収入を伸ばすほうが、結局は強くなります。</li>
-        <li><b>特産地を狙え。</b>💰商や⛏金を早めに確保すると収入差がつきます。米産地を複数持てば大軍も維持できます。</li>
         <li><b>戦線は地続きで。</b>兵は城のある領地からしか動けません。飛び地は作れないので、着実に隣へ広げましょう。</li>
-        <li><b>相手を読む。</b>敵国を偵察して（クリックでポップアップ）、有利な兵科で攻めるのが勝利の近道。</li>
+        <li><b>相手を読む。</b>敵国を偵察して、有利な兵科で攻めるのが勝利の近道。</li>
+        <li><b>城を盾に守れ。</b>城は2の戦力を持つ守りの要。城のある国は城なしの倍近く守りやすい。</li>
         <li><b>上洛は機を見て。</b>ゲート4国を固め、軍を整えてから一気に。参内中は全員に狙われるので、守れる戦力を残しておくこと。</li>
         <li><b>誰かが上洛しそうなら、全員で止める。</b>あなたも、AIたちも、リーダーを引きずり下ろしにきます。</li>
+        <li><b>難しければ「易」に。</b>はじめはAI難易度を「易」にして、ゲームの流れをつかんでから「普通」「難」に挑戦するのがおすすめです。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>盤面の見方</h2>
+      <ul>
+        <li>国の枠の<b>色</b>＝その領地の持ち主。色がついていない国は、まだ誰の領地でもありません。
+          <ul>
+            <li><span class="color-swatch" style="background:#cdd9e6;border-color:#2f4a66;"></span> 青＝あなた（織田）</li>
+            <li><span class="color-swatch" style="background:#eccdc7;border-color:#9c2a1f;"></span> 赤＝島津</li>
+            <li><span class="color-swatch" style="background:#d2dec6;border-color:#3a5a2c;"></span> 緑＝毛利</li>
+            <li><span class="color-swatch" style="background:#d8cce8;border-color:#5a3a7a;"></span> 紫＝伊達</li>
+          </ul>
+        </li>
+        <li><b>赤い枠</b>の国＝京都ゲート国（上洛に必要な6国）。</li>
+        <li>国の中の<b>数字</b>＝そこにいる兵の数。<b>🏯</b>＝城。</li>
+        <li>絵文字＝特産（🌾米どころ・🧂塩・💰商業・⛏鉱山）。特産地は収入が増えます。</li>
+        <li>国をクリックすると、地図上に<b>兵科の内訳ポップアップ</b>が表示されます。ポップアップはドラッグして移動できます。</li>
+        <li>★マーク＝大将がその国にいます。討たれると佐渡島流しになります。</li>
+        <li>金色に点滅している国＝大将の帰還先の候補（クリックで選択）。</li>
       </ul>
     </section>
 
     <footer>
       原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-      ── 天下布武の道は、汝の采配にあり ──<br><br>
-      v0.3 (v27) ｜ 対応機能：特産地効果・兵科ポップアップ・天運カード拡張・AI強化
+      ── 天下布武の道は、汝の采配にあり ──
     </footer>
 
   </div>

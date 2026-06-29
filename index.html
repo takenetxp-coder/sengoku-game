@@ -86,13 +86,15 @@
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
   .kuni.p2{border-color:#3a5a2c; background-color:#d2dec6;
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p3{border-color:#6d5520; background-color:#e2d3ac;
+  .kuni.p3{border-color:#5a3a7a; background-color:#d8cce8;
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
   .kuni.sel{outline:3px solid var(--kin); outline-offset:1px; z-index:6;}
   .kuni.reach{outline:2px solid #4a6b3a; outline-offset:1px; z-index:5;}
+  .kuni.return-target{outline:3px solid #c8a020; outline-offset:2px; z-index:6; animation:pulse-gold 1s infinite alternate;}
+  @keyframes pulse-gold{from{outline-color:#c8a020;}to{outline-color:#ffe060;}}
   .kuni.reach-enemy{outline:2px dashed var(--aka2); outline-offset:1px; z-index:5;}
   .owner0{color:var(--ao);} .owner1{color:var(--aka2);}
-  .owner2{color:#4a6b3a;} .owner3{color:#8a6d2a;}
+  .owner2{color:#4a6b3a;} .owner3{color:#5a3a7a;}
 
   .legend{display:flex; gap:12px; flex-wrap:wrap; font-size:10px; color:#5a4f3a; margin-top:6px;}
   .legend span{display:inline-flex; align-items:center; gap:3px;}
@@ -111,7 +113,7 @@
   .gatebar i.own0{background:#cdd9e6; border-color:var(--ao);}
   .gatebar i.own1{background:#e8c9c4; border-color:var(--aka2);}
   .gatebar i.own2{background:#d4e0cc; border-color:#4a6b3a;}
-  .gatebar i.own3{background:#e8ddc4; border-color:#8a6d2a;}
+  .gatebar i.own3{background:#d8cce8; border-color:#5a3a7a;}
 
   .army-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-top:4px;}
   .ucard{
@@ -229,6 +231,18 @@
     transition:background 0.2s, transform 0.1s;
   }
   #title-screen .ts-start:hover{ background:#c4402f; transform:scale(1.03); }
+  #title-screen .ts-continue{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:15px; letter-spacing:3px;
+    background:transparent; color:#b09878;
+    border:1.5px solid #5a4f3a; border-radius:4px;
+    padding:9px 36px; cursor:pointer; margin-top:12px;
+    transition:background 0.2s, color 0.2s, transform 0.1s;
+  }
+  #title-screen .ts-continue:hover{ background:#2f4a66; color:#f3ecdb; border-color:#4a7aaa; transform:scale(1.03); }
+  #title-screen .ts-save-info{
+    font-size:10px; color:#6b5f48; letter-spacing:1px; margin-top:8px;
+  }
   #title-screen .ts-credit{
     position:absolute; bottom:18px;
     font-size:11px; color:#5a4f3a; letter-spacing:1px;
@@ -236,6 +250,14 @@
   #title-screen .ts-ver{
     font-size:10px; color:#5a4f3a; margin-top:6px; letter-spacing:1px;
   }
+  #title-screen .ts-manual{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:13px; letter-spacing:2px; color:#9a8f7a;
+    background:none; border:none; cursor:pointer; margin-top:18px;
+    text-decoration:underline; text-underline-offset:4px;
+    transition:color 0.2s;
+  }
+  #title-screen .ts-manual:hover{ color:#f3ecdb; }
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
 </head>
@@ -245,10 +267,13 @@
   <h1>戦国武将ゲーム</h1>
   <div class="ts-sub">SENGOKU — リメイク版</div>
   <div class="ts-divider"></div>
-  <button class="ts-start" onclick="hideTitleScreen()">ゲームを始める</button>
+  <button class="ts-start" id="btn-new-game" onclick="startNewGame()">ゲームを始める</button>
+  <button class="ts-continue" id="btn-continue" style="display:none;" onclick="continueGame()">▶ 続きから</button>
+  <div class="ts-save-info" id="save-info"></div>
+  <button class="ts-manual" onclick="window.open('manual.html','_blank')">📖 遊び方マニュアル</button>
   <div class="ts-credit">
     原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-    <span class="ts-ver">v0.4 — ルール強化版（v28）</span>
+    <span class="ts-ver">v0.7 — セーブ/ロード（v31）</span>
   </div>
 </div>
 
@@ -256,7 +281,7 @@
   <header>
     <h1>戦国武将ゲーム</h1>
     <span class="sub">リメイク版 ｜ ルール検証プロトタイプ</span>
-    <span class="ver">v0.4 — ルール強化版（v28）</span>
+    <span class="ver">v0.7 — セーブ/ロード（v31）</span>
   </header>
 
   <div class="layout">
@@ -276,6 +301,7 @@
           <button class="act" id="btnEnd" style="margin-top:0;flex:1;">手番を終える ▶</button>
           <button class="act ghost" id="btnHelp" style="margin-top:0;width:auto;padding:7px 12px;">遊び方</button>
           <button class="act ghost" id="btnSound" style="margin-top:0;width:auto;padding:7px 12px;">♪ 音 オフ</button>
+
         </div>
       </div>
     </div>
@@ -315,6 +341,8 @@
     </div>
   </div>
 </div>
+
+<div id="return-banner" style="display:none;position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:300;background:var(--sumi);color:var(--paper);border-radius:8px;padding:10px 20px;font-size:13px;box-shadow:0 3px 12px rgba(0,0,0,0.6);text-align:center;line-height:1.6;pointer-events:none;"></div>
 
 <div id="map-popup" style="display:none; position:fixed; z-index:150; background:var(--paper); border:1.5px solid var(--line); border-radius:6px; box-shadow:0 4px 16px rgba(0,0,0,0.25); padding:8px 10px; min-width:180px; max-width:240px; font-family:'Hiragino Mincho ProN','Yu Mincho',serif; font-size:12px; user-select:none;">
   <div id="pp-title" class="pp-title" style="cursor:grab;"></div>
@@ -402,7 +430,7 @@ const Audio = {
 
 // ---- パラメータ（仕様書 第6章より） ----
 const NPLAYERS = 4; // 0=あなた、1〜3=AI
-const PCOLORS = ['#3a5a7a', '#c4402f', '#4a6b3a', '#8a6d2a']; // 青(あなた)・赤・緑・金茶
+const PCOLORS = ['#3a5a7a', '#c4402f', '#4a6b3a', '#7a4aaa']; // 青(あなた)・赤・緑・紫
 // 選択可能な4大名（武将名・本拠ID・本拠国名）
 const DAIMYO = [
   {name:'島津', home:'satsuma', homeName:'薩摩'},
@@ -611,7 +639,9 @@ const GATE_IDS = KUNI.filter(k=>k.gate).map(k=>k.id);
 
 // ---- ゲーム状態 ----
 let G;
-let _battleResultCallback = null; // AIに攻められた結果ポップアップの「閉じる」後コールバック
+let _battleResultCallback = null;
+let DIFFICULTY = 1;   // 0=易 1=普通 2=難
+let AI_DELAY = 500;   // AIターン間のウェイト(ms)
 function initGame(){
   const byid = {};
   KUNI.forEach(k=>{
@@ -640,7 +670,9 @@ function initGame(){
     orderIdx: 0,
     turn:1, cur: order[0], bought:0, phase:'idle', acted:false,
     selected:null, moveFrom:null, over:false,
+    returnMode:false, returnCands:[],
     occupyAge:{}, // 各国の城なし占拠の経過手番 {kuniId: turns}
+    stats:{ turns:0, maxKuni:[0,0,0,0], battleWin:[0,0,0,0], battleLoss:[0,0,0,0], taishoKill:[0,0,0,0] },
   };
 }
 
@@ -733,16 +765,22 @@ function beginTaishoReturn(p){
   if(!cands.length){ // 万一どこにも戻れないなら本国へ強制
     placeTaisho(p, PHOMES[p]); afterTaishoReturn(p); return;
   }
-  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
-  const btns=cands.map(id=>`<button class="act ghost" style="display:block;width:100%;text-align:left;margin:4px 0;"
-     onclick="doTaishoReturn('${id}')">${G.byid[id].nm}（${G.byid[id].kk}万石${G.byid[id].castle?'・城':''}）</button>`).join('');
-  m.innerHTML=`<h3>大将の帰還</h3>
-    <p style="font-size:12px;">島流しが明けました。大将を戻す国を選んでください。</p>
-    <div style="max-height:240px;overflow-y:auto;">${btns}</div>`;
-  mb.style.display='flex';
+  // モーダルを使わず、マップ上の候補国をハイライト
+  G.returnMode=true; G.returnCands=cands.slice();
+  closeMapPopup();
+  render();
+  // バナーで案内
+  const banner=document.getElementById('return-banner');
+  if(banner){
+    banner.innerHTML=`⚑ 島流し明け — 金色に光る国をクリックして<b style="color:var(--kin);">大将の帰還先</b>を選んでください<br>`+
+      `<small style="color:#aaa;">候補：${cands.map(id=>G.byid[id].nm).join('・')}</small>`;
+    banner.style.display='block';
+  }
 }
 function doTaishoReturn(id){
-  document.getElementById('modalbg').style.display='none';
+  G.returnMode=false; G.returnCands=[];
+  const banner=document.getElementById('return-banner');
+  if(banner) banner.style.display='none';
   placeTaisho(0, id);
   log(`<span class="turn">${PNAMES[0]} の大将が ${G.byid[id].nm} に帰還した。</span>`);
   afterTaishoReturn(0);
@@ -902,6 +940,9 @@ function render(){
     el.className='kuni'+(k.gate?' gate':'')+(k.kyoto?' kyoto':'')
       +(displayOwner !== null?' p'+displayOwner:'')
       +(G.selected===k.id?' sel':'');
+    if(G.returnMode && G.returnCands && G.returnCands.includes(k.id)){
+      el.className += ' return-target';
+    }
     if(G.moveFrom&&reachable(G.moveFrom,k.id)){
       // 攻撃になる先（敵＝0以外の城 or 兵）は赤、それ以外は緑
       const isEnemyTarget = (k.owner!==null&&k.owner!==0) || (k.armyOwner!==null&&k.armyOwner!==0 && unitsTotal(k.army)>0);
@@ -927,7 +968,7 @@ function render(){
       (k.kyoto?'<div class="kk">天下</div>':`<div class="kk">${k.kk}万石</div>`)+
       (mk?`<div class="mk">${mk}</div>`:'')+
       castleSVG + armyBadge + taishoBadge;
-    el.onclick=(e)=>clickKuni(k.id,e);
+    el.onclick=(e)=>{e.stopPropagation();clickKuni(k.id,e);};
     map.appendChild(el);
   });
   // status player
@@ -1053,9 +1094,11 @@ function renderArmyDetail(k){
 // ---- 地図上ポップアップ（兵科内訳） ----
 function showMapPopup(id, evt){
   const k=G.byid[id];
+  if(!k||!evt) return;
   const popup=document.getElementById('map-popup');
   const titleEl=document.getElementById('pp-title');
   const bodyEl=document.getElementById('pp-body');
+  if(!popup||!titleEl||!bodyEl) return;
 
   // タイトル（国名・所有者）
   let ownerTxt='空白地';
@@ -1145,6 +1188,11 @@ function reachable(from,to){
 //             自分の城のある国を選ぶ → 軍を雇える（右パネル）／隣の空白に築城可
 // 2クリック目：光った国をクリック → 移動・合戦・無血制圧／空白なら築城
 function clickKuni(id,evt){
+  // 島流し帰還先選択中：対象国クリックで帰還
+  if(G.returnMode){
+    if(G.returnCands.includes(id)){ doTaishoReturn(id); }
+    return; // returnMode中は他の操作を全て無効
+  }
   if(evt) showMapPopup(id, evt); // ポップアップは常に表示（AI手番・終了後も閲覧可）
   if(G.cur!==0||G.over) return;
   const k=G.byid[id];
@@ -1460,7 +1508,10 @@ function resolveBattle(from,to,attacker,attWin,p,attArmy,fullArmy){
       if(t.army['大将']) delete t.army['大将'];
       captureTaisho(defender);
       result.taishoDied=defender;
+      if(G.stats) G.stats.taishoKill[attacker]=(G.stats.taishoKill[attacker]||0)+1;
     }
+    if(G.stats){ G.stats.battleWin[attacker]=(G.stats.battleWin[attacker]||0)+1;
+      if(defender!==null) G.stats.battleLoss[defender]=(G.stats.battleLoss[defender]||0)+1; }
     result.attAfter=countSoldiers(march);
     result.defAfter=0;
   }else{
@@ -1470,7 +1521,10 @@ function resolveBattle(from,to,attacker,attWin,p,attArmy,fullArmy){
       if(march['大将']) delete march['大将'];
       captureTaisho(attacker);
       result.taishoDied=attacker;
+      if(G.stats) G.stats.taishoKill[defender!==null?defender:attacker]=(G.stats.taishoKill[defender!==null?defender:attacker]||0)+1;
     }
+    if(G.stats){ if(defender!==null) G.stats.battleWin[defender]=(G.stats.battleWin[defender]||0)+1;
+      G.stats.battleLoss[attacker]=(G.stats.battleLoss[attacker]||0)+1; }
     for(const u in march){ f.army[u]=(f.army[u]||0)+march[u]; }
     if(unitsTotal(f.army)>0) f.armyOwner=attacker;
     else f.armyOwner=null;
@@ -1573,9 +1627,23 @@ function tryDeclareSanpai(p){
 }
 function checkWin(){ validateSanpai(); for(let p=0;p<NPLAYERS;p++) tryDeclareSanpai(p); }
 function showEnd(winner){
+  deleteSave(); // ゲーム終了時にセーブ削除
   const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
-  m.innerHTML=`<h3>天下統一</h3><p style="font-size:16px;">${winner} の勝利。</p>
-    <p class="hint">大将を京都に入れ、周辺ゲート国4国以上を支配して上洛を果たしました。</p>
+  const s=G.stats||{};
+  const isWin = winner===PNAMES[0];
+  const diffLabel=['易','普通','難'][DIFFICULTY]||'普通';
+  const statsHtml=`
+    <div style="font-size:12px;margin:10px 0;background:var(--paper2);border-radius:4px;padding:8px 10px;text-align:left;">
+      <div style="font-weight:700;margin-bottom:4px;letter-spacing:1px;">ゲーム記録</div>
+      <div>総手番数：<b>${G.turn}</b> 巡　難易度：<b>${diffLabel}</b></div>
+      <div>あなたの最大支配国：<b>${s.maxKuni?s.maxKuni[0]:'-'}</b> 国</div>
+      <div>合戦　勝：<b>${s.battleWin?s.battleWin[0]:0}</b> 回　負：<b>${s.battleLoss?s.battleLoss[0]:0}</b> 回</div>
+      <div>大将を討った回数：<b>${s.taishoKill?s.taishoKill[0]:0}</b> 回</div>
+    </div>`;
+  m.innerHTML=`<h3>${isWin?'天下統一！':'天下取れず…'}</h3>
+    <p style="font-size:16px;text-align:center;">${winner} の勝利。</p>
+    <p class="hint">${isWin?'大将を京都に入れ、周辺ゲート国4国以上を支配して上洛を果たしました。':'あなたは敗れました。次こそ天下を！'}</p>
+    ${statsHtml}
     <button class="act" onclick="location.reload()">もう一度</button>`;
   mb.style.display='flex';
 }
@@ -1591,13 +1659,16 @@ function endTurn(){
 function advanceTurn(){
   if(G.over) return;
   G.orderIdx = (G.orderIdx+1) % NPLAYERS;
-  if(G.orderIdx===0) G.turn++; // 一巡したら巡カウント
+  if(G.orderIdx===0) G.turn++;
+  // 統計：最大領地数を更新
+  for(let _p=0;_p<NPLAYERS;_p++){ const _n=ownedKuni(_p).length; if(_n>G.stats.maxKuni[_p]) G.stats.maxKuni[_p]=_n; }
   G.cur = G.turnOrder[G.orderIdx];
   G.phase='idle'; G.selected=null; G.moveFrom=null; G.acted=false; G.bought=0;
   beginTurnFor(G.cur);
 }
 // 手番開始時の共通処理（参内判定・収入・カード）
 function beginTurnFor(p){
+  saveGame(); // 手番開始ごとに自動セーブ
   validateSanpai();
   if(G.sanpai[p]==='pending'){ checkSanpai(p); if(G.over)return; }
   if(G.sanpai[p]==='declared'){ G.sanpai[p]='pending'; }
@@ -1616,8 +1687,8 @@ function beginTurnFor(p){
     render(); updateGuide();
     if(G.exile[p]>0){
       // まだ島流し継続 → そのまま手番終了（次の人へ）
-      if(p===0){ /* あなた：自動で手番送り */ setTimeout(()=>advanceTurn(), 900); }
-      else { setTimeout(()=>advanceTurn(), 700); }
+      if(p===0){ /* あなた：自動で手番送り */ setTimeout(()=>advanceTurn(), AI_DELAY); }
+      else { setTimeout(()=>advanceTurn(), AI_DELAY); }
       return;
     }
     // exileがちょうど0になった → 大将を復帰させてから手番を始める
@@ -1635,7 +1706,7 @@ function beginTurnFor(p){
     showCard(drawn.card, drawn.text);
   } else {
     render(); updateGuide();
-    setTimeout(()=>aiTurn(p), 650);
+    setTimeout(()=>aiTurn(p), AI_DELAY);
   }
 }
 // 引いたカードをモーダルで提示（プレイヤー用）
@@ -1685,7 +1756,7 @@ function aiTurn(p){
   if(G.exile[p]>0){
     log(`<span class="ai">${PNAMES[p]}</span>：大将は島流し中。動けない。`);
     render(); if(G.over)return;
-    setTimeout(advanceTurn, 400);
+    setTimeout(advanceTurn, Math.max(80,AI_DELAY*0.6)|0);
     return;
   }
   let acted=false;
@@ -1693,7 +1764,8 @@ function aiTurn(p){
   const myCastles = castleCount(p);
   const playerGate = Math.max(...[0,1,2,3].filter(q=>q!==p).map(q=>gateOwned(q))); // 最も上洛に近い敵のゲート数
   const anyEnemySanpai = [0,1,2,3].some(q=>q!==p && G.sanpai[q]);
-  const playerThreat = anyEnemySanpai || playerGate>=3; // 誰かが参内中／ゲート3国以上＝危険
+  const threatGate = DIFFICULTY===0?4 : DIFFICULTY===2?2 : 3;
+  const playerThreat = anyEnemySanpai || playerGate>=threatGate;
   const INVADE_CASTLE_THRESHOLD = 4;
   const phase = (playerThreat || myCastles>=INVADE_CASTLE_THRESHOLD) ? 'invade' : 'develop';
 
@@ -1722,7 +1794,7 @@ function aiTurn(p){
 
   // (a) 誰かが参内中なら阻止を最優先
   if(!acted && anyEnemySanpai){
-    const block = cands.filter(c=>c.enemy && (c.isKyoto||c.isGate) && c.winp>=0.4)
+    const block = cands.filter(c=>c.enemy && (c.isKyoto||c.isGate) && c.winp>=(DIFFICULTY===2?0.3:0.4))
                        .sort((x,y)=>y.winp-x.winp)[0];
     if(block){
       const f=G.byid[block.from], t=G.byid[block.to];
@@ -1794,7 +1866,8 @@ function aiTurn(p){
         log(`<span class="ai">${PNAMES[p]}</span>：${t.nm} へ進軍し国力拡大。`);
         acted=true;
       } else {
-        const atk=cands.filter(c=>c.enemy && c.winp>=0.55).sort((x,y)=>y.winp-x.winp)[0];
+        const _atkThr=DIFFICULTY===0?0.65:DIFFICULTY===2?0.45:0.55;
+        const atk=cands.filter(c=>c.enemy && c.winp>=_atkThr).sort((x,y)=>y.winp-x.winp)[0];
         if(atk){
           log(`<span class="ai">${PNAMES[p]}</span>：${G.byid[atk.from].nm}→${G.byid[atk.to].nm} へ出陣！`);
           resolveBattle(atk.from,atk.to,p,Math.random()<atk.winp,atk.winp,{...G.byid[atk.from].army},true);
@@ -1809,7 +1882,7 @@ function aiTurn(p){
           t.army={...f.army}; t.armyOwner=p; f.army={}; f.armyOwner=null;
           log(`<span class="ai">${PNAMES[p]}</span>：${t.nm} へ進軍。`);
           acted=true; break;
-        } else if(c.enemy && c.winp>=0.5){
+        } else if(c.enemy && c.winp>=(DIFFICULTY===0?0.6:DIFFICULTY===2?0.4:0.5)){
           log(`<span class="ai">${PNAMES[p]}</span>：${f.nm}→${t.nm} へ出陣！`);
           resolveBattle(c.from,c.to,p,Math.random()<c.winp,c.winp,{...f.army},true);
           acted=true; break;
@@ -1838,7 +1911,7 @@ function aiTurn(p){
   render();
   if(G.over) return;
   // 次のプレイヤーへ
-  setTimeout(advanceTurn, 500);
+  setTimeout(advanceTurn, AI_DELAY);
 }
 // 京都までの簡易距離（BFS）
 function gateDist(id){
@@ -1871,6 +1944,19 @@ function showDaimyoSelect(){
   });
   m.innerHTML=`
     <h3>大名を選んでください</h3>
+    <div style="margin-bottom:10px;padding:8px;background:var(--paper2);border-radius:4px;font-size:12px;">
+      <b>AI難易度：</b>
+      <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="diff" value="0" onchange="DIFFICULTY=0"> 易（AIが甘め）</label>
+      <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="diff" value="1" checked onchange="DIFFICULTY=1"> 普通</label>
+      <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="diff" value="2" onchange="DIFFICULTY=2"> 難（AIが積極的）</label>
+      <div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px;">
+        <b>ゲーム速度：</b>
+        <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="speed" value="0" onchange="AI_DELAY=100"> 速い</label>
+        <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="speed" value="1" checked onchange="AI_DELAY=500"> 普通</label>
+        <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="speed" value="2" onchange="AI_DELAY=1500"> 遅い</label>
+        <small style="margin-left:8px;color:#6b5f48;">（AI手番の間隔）</small>
+      </div>
+    </div>
     <p style="font-size:11px;color:#6b5f48;margin:2px 0 8px;">あなたが操る大名を選びます。残り3大名はAIが操作。京都に近い大名ほど上洛で有利です（手番は遠い大名から順に回ります）。</p>
     ${cards}
   `;
@@ -1898,6 +1984,66 @@ function startGame(){
   };
 }
 
+// ---- セーブ/ロード ----
+const SAVE_KEY = 'sengoku_save_v1';
+
+function saveGame(){
+  if(!G || G.over) return;
+  try {
+    const data = {
+      G: JSON.parse(JSON.stringify(G)),
+      MYCHOICE, DIFFICULTY, AI_DELAY,
+      savedAt: new Date().toLocaleString('ja-JP')
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e){ console.warn('Save failed:', e); }
+}
+
+function deleteSave(){
+  try { localStorage.removeItem(SAVE_KEY); } catch(e){}
+}
+
+function getSaveInfo(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    return { savedAt: data.savedAt || '', turn: data.G?.turn || 1, mychoice: data.MYCHOICE ?? 1 };
+  } catch(e){ return null; }
+}
+
+function continueGame(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw){ startNewGame(); return; }
+    const data = JSON.parse(raw);
+    G = data.G;
+    MYCHOICE = data.MYCHOICE ?? 1;
+    DIFFICULTY = data.DIFFICULTY ?? 1;
+    AI_DELAY = data.AI_DELAY ?? 500;
+    // 揮発状態をリセット（ロード時は手番の最初からやり直し）
+    G.phase = 'idle'; G.selected = null; G.moveFrom = null;
+    G.returnMode = false; G.returnCands = [];
+    // タイトルを非表示
+    const ts = document.getElementById('title-screen');
+    ts.style.display = 'none';
+    // ゲームを再開
+    document.getElementById('log').innerHTML = '';
+    log(`<span class="turn">── セーブデータを読み込みました（第${G.turn}巡）──</span>`);
+    render(); updateGuide();
+    beginTurnFor(G.cur);
+  } catch(e){
+    console.warn('Load failed:', e);
+    deleteSave();
+    startNewGame();
+  }
+}
+
+function startNewGame(){
+  deleteSave();
+  hideTitleScreen();
+}
+
 // ---- タイトル画面 ----
 function hideTitleScreen(){
   const ts = document.getElementById('title-screen');
@@ -1906,7 +2052,18 @@ function hideTitleScreen(){
   setTimeout(()=>{ ts.style.display='none'; showDaimyoSelect(); }, 400);
 }
 // ---- 起動 ----
-// タイトル画面を表示したまま待機（ボタン押下でhideTitleScreen→showDaimyoSelect）
+// タイトル画面を表示したまま待機
+(function(){
+  const info = getSaveInfo();
+  if(info){
+    const btn = document.getElementById('btn-continue');
+    const inf = document.getElementById('save-info');
+    const nbtn = document.getElementById('btn-new-game');
+    if(btn){ btn.style.display=''; }
+    if(inf){ inf.textContent = `保存データ：第${info.turn}巡 ・ ${info.savedAt}`; }
+    if(nbtn){ nbtn.textContent = '最初から始める'; }
+  }
+})();
 
 </script>
 </body>
