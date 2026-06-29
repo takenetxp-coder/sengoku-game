@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>戦国武将ゲーム リメイク版 ｜ 遊び方マニュアル</title>
+<title>JORAKU ─ 六雄争覇 ｜ 遊び方マニュアル</title>
 <style>
   :root{
     --ink:#1a1410; --paper:#f3ecdb; --paper2:#e7dcc3;
@@ -96,17 +96,17 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>戦国武将ゲーム</h1>
-    <div class="en">SENGOKU — リメイク版</div>
-    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル v1.3</div>
+    <h1>JORAKU</h1>
+    <div class="en">六雄争覇</div>
+    <div class="lead">百万石を競い、京に上り、天下統一を成し遂げよ。<br>遊び方マニュアル v1.4</div>
   </header>
 
   <div class="body">
 
     <section>
       <h2>このゲームは？</h2>
-      <p>1982年にタカトクトイスが発売したボードゲーム「戦国武将ゲーム」を、現代に蘇らせた6人対戦の戦国シミュレーションです。あなたは戦国大名となり、領地を広げ、軍を率い、ライバルを出し抜いて<span class="big">京都への上洛</span>を目指します。最初に京で征夷大将軍となった者が、天下を取ります。</p>
-      <p>対戦相手5人はコンピュータ（AI）が操作します。1ゲームは数十分ほど。ブラウザだけで遊べます。</p>
+      <p>最大6人の戦国大名が覇を競う、ブラウザで遊べる戦国シミュレーションです。あなたは大名となり、領地を広げ、軍を率い、ライバルを出し抜いて<span class="big">京都への上洛</span>を目指します。最初に京で征夷大将軍となった者が、天下を取ります。</p>
+      <p>対戦相手は<b>1〜5人</b>のコンピュータ（AI）から好きな人数・勢力を選べます。1ゲームは数十分ほど。ブラウザだけで遊べます。</p>
     </section>
 
     <section>
@@ -132,8 +132,8 @@
         <li>ゲームのプレイ記録がある場合は、ベストスコアと実績バッジがタイトル画面に表示されます（後述）。</li>
       </ul>
 
-      <h3>大名・難易度・速度を選ぶ</h3>
-      <p>「ゲームを始める」を押すと設定画面が開きます。まずAI難易度とゲーム速度を選び、それから大名を選んでください。</p>
+      <h3>大名・対戦相手・難易度・速度を選ぶ</h3>
+      <p>「ゲームを始める」を押すと設定画面が開きます。AI難易度とゲーム速度を選んでから大名を選んでください。大名を選ぶと続けて対戦相手の選択画面が開きます。</p>
 
       <h3>AI難易度<span class="badge-new">NEW</span></h3>
       <div class="diff-grid">
@@ -154,17 +154,29 @@
       <h3>ゲーム速度<span class="badge-new">NEW</span></h3>
       <p>AIの手番がどれくらい速く進むかを「速い／普通／遅い」から選べます。「速い」にするとAIの動きを素早く確認でき、「遅い」にすると何が起きているか追いやすくなります。</p>
 
-      <h3>大名を選ぶ <span class="badge-new">6大名</span></h3>
+      <h3>大名を選ぶ</h3>
       <table>
-        <tr><th>大名</th><th>本拠</th><th>京都への近さ</th><th>難易度</th></tr>
-        <tr><td>織田</td><td>尾張（中央）</td><td>とても近い</td><td class="adv-win">易しい</td></tr>
-        <tr><td>北条</td><td>相模（関東）</td><td>やや遠い</td><td>ふつう</td></tr>
-        <tr><td>毛利</td><td>安芸（西国）</td><td>やや遠い</td><td>ふつう</td></tr>
-        <tr><td>伊達</td><td>陸奥（東北）</td><td>遠い</td><td class="adv-lose">難しい</td></tr>
-        <tr><td>島津</td><td>薩摩（九州）</td><td>とても遠い</td><td class="adv-lose">難しい</td></tr>
-        <tr><td>長宗我部</td><td>土佐（四国）</td><td>とても遠い</td><td class="adv-lose">難しい</td></tr>
+        <tr><th>大名</th><th>本拠</th><th>ゲートまでの距離</th><th>難易度</th></tr>
+        <tr><td>織田</td><td>尾張（中央）</td><td>2国（とても近い）</td><td class="adv-win">易しい</td></tr>
+        <tr><td>長宗我部</td><td>土佐（四国）</td><td>3国（やや遠い）</td><td>ふつう</td></tr>
+        <tr><td>北条</td><td>相模（関東）</td><td>4国（やや遠い）</td><td>ふつう</td></tr>
+        <tr><td>毛利</td><td>安芸（西国）</td><td>5国（遠い）</td><td class="adv-lose">難しい</td></tr>
+        <tr><td>伊達</td><td>陸奥（東北）</td><td>5国（遠い）</td><td class="adv-lose">難しい</td></tr>
+        <tr><td>島津</td><td>薩摩（九州）</td><td>8国（最も遠い）</td><td class="adv-lose">難しい</td></tr>
       </table>
-      <p class="cap">京都に近い大名ほど上洛が楽で有利です。腕に自信があれば、遠い島津・伊達・長宗我部で挑戦してみましょう。なお、京都から遠い大名ほど手番が早く回ってくる（先に動ける）ので、不利が少し和らぎます。</p>
+      <p class="cap">京都に近い大名ほど上洛が楽で有利です。腕に自信があれば、遠い毛利・伊達・島津で挑戦してみましょう。なお、京都から遠い大名ほど手番が早く回ってくる（先に動ける）ので、不利が少し和らぎます。</p>
+
+      <h3>対戦相手を選ぶ <span class="badge-new">NEW</span></h3>
+      <p>大名を選ぶと、続けて<b>対戦相手の選択画面</b>が開きます。残り5大名のうち、実際に登場させるAI勢力を<b>1〜5人</b>チェックボックスで選んで「ゲーム開始 ▶」を押してください。</p>
+      <div class="box new">
+        <ul style="margin:0; padding-left:18px;">
+          <li>デフォルトは全5大名が選択済み（最大人数）。</li>
+          <li>チェックを外した大名はゲームに登場しません。</li>
+          <li>対戦相手が少ないほど序盤の競合が減り、プレイしやすくなります。</li>
+          <li>1人対戦（敵1人）から5人対戦（敵5人）まで自由に設定できます。</li>
+        </ul>
+      </div>
+      <div class="box tip"><b>コツ：</b>初めてのうちは敵を2〜3人にして地形や兵科に慣れてから、徐々に人数を増やすとゲームを楽しみやすいです。</div>
     </section>
 
     <section>
@@ -198,7 +210,7 @@
         <tr><th>タブ</th><th>内容</th></tr>
         <tr><td class="l">国力</td><td class="l">あなたの資金・石高・収入/維持費・支配国数・ゲート支配状況などを表示。</td></tr>
         <tr><td class="l">選択中</td><td class="l">クリックした国の兵科内訳と、その国での行動（徴募・築城）ができます。</td></tr>
-        <tr><td class="l">敵勢力</td><td class="l">AI5勢力それぞれの資金・石高・ゲート支配数を一覧表示。</td></tr>
+        <tr><td class="l">敵勢力</td><td class="l">参加中のAI勢力それぞれの資金・石高・ゲート支配数を一覧表示（対戦相手の人数によって行数が変わります）。</td></tr>
       </table>
       <p>パネル下部には<b>「戦況ログ」</b>が独立して表示されます。天運カードの引き結果・合戦経過・参内の動きがすべてここに流れます。</p>
     </section>
@@ -367,6 +379,8 @@
         <li><b>上洛は機を見て。</b>ゲート4国を固め、軍を整えてから一気に。参内中は全員に狙われるので、守れる戦力を残しておくこと。</li>
         <li><b>誰かが上洛しそうなら、全員で止める。</b>あなたも、AIたちも、リーダーを引きずり下ろしにきます。</li>
         <li><b>難しければ「易」に。</b>はじめはAI難易度を「易」にして、ゲームの流れをつかんでから「普通」「難」に挑戦するのがおすすめです。</li>
+        <li><b>敵の人数を減らす。</b>対戦相手が多いと戦線があちこちに広がり大変です。慣れないうちは敵2〜3人に絞ってゲームに慣れましょう。</li>
+        <li><b>相手を選ぶ。</b>遠くから来る島津・伊達を外せばゲート周辺の争奪が緩やかになります。逆に強い相手だけ残して腕を試すのも面白いです。</li>
       </ul>
     </section>
 
@@ -386,12 +400,12 @@
       <ul>
         <li>国の枠の<b>色</b>＝その領地の持ち主。色がついていない国は、まだ誰の領地でもありません。
           <ul>
-            <li><span class="color-swatch" style="background:#cdd9e6;border-color:#2f4a66;"></span> 青＝あなた（選んだ大名）</li>
-            <li><span class="color-swatch" style="background:#eccdc7;border-color:#9c2a1f;"></span> 赤＝AI 第1勢力</li>
-            <li><span class="color-swatch" style="background:#d2dec6;border-color:#3a5a2c;"></span> 緑＝AI 第2勢力</li>
-            <li><span class="color-swatch" style="background:#d8cce8;border-color:#5a3a7a;"></span> 紫＝AI 第3勢力</li>
-            <li><span class="color-swatch" style="background:#f0dfc0;border-color:#a06010;"></span> 橙＝AI 第4勢力</li>
-            <li><span class="color-swatch" style="background:#c0dede;border-color:#1a5a5a;"></span> 青緑＝AI 第5勢力</li>
+            <li><span class="color-swatch" style="background:#c0d4ee;border-color:#1a4e88;"></span> 青＝あなた（選んだ大名）</li>
+            <li><span class="color-swatch" style="background:#ecc8c8;border-color:#a02020;"></span> 赤＝AI 第1勢力</li>
+            <li><span class="color-swatch" style="background:#c2e0c8;border-color:#1e6030;"></span> 緑＝AI 第2勢力</li>
+            <li><span class="color-swatch" style="background:#d4c4ec;border-color:#5820a0;"></span> 紫＝AI 第3勢力</li>
+            <li><span class="color-swatch" style="background:#f0e0a0;border-color:#a06000;"></span> 黄橙＝AI 第4勢力</li>
+            <li><span class="color-swatch" style="background:#b0e0e0;border-color:#007070;"></span> シアン＝AI 第5勢力</li>
           </ul>
           <span class="cap">（どの大名が何色になるかは、あなたが選んだ大名によって変わります）</span>
         </li>
@@ -405,8 +419,8 @@
     </section>
 
     <footer>
-      原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-      v1.3 対応マニュアル　　── 天下布武の道は、汝の采配にあり ──
+      JORAKU ─ 六雄争覇　　v1.4 対応マニュアル<br>
+      ── 天下布武の道は、汝の采配にあり ──
     </footer>
 
   </div>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>戦国武将ゲーム リメイク版 ｜ ルール検証プロトタイプ</title>
+<title>JORAKU ─ 六雄争覇</title>
 <style>
   :root{
     --ink:#1a1410; --paper:#e8e0d0; --paper2:#ddd2bc;
@@ -510,8 +510,8 @@
 <body>
 <div id="title-screen">
   <div class="ts-deco">天 下 布 武</div>
-  <h1>戦国武将ゲーム</h1>
-  <div class="ts-sub">SENGOKU — リメイク版</div>
+  <h1>JORAKU</h1>
+  <div class="ts-sub">六雄争覇</div>
   <div class="ts-divider"></div>
   <button class="ts-start" id="btn-new-game" onclick="startNewGame()">ゲームを始める</button>
   <button class="ts-continue" id="btn-continue" style="display:none;" onclick="continueGame()">▶ 続きから</button>
@@ -520,16 +520,15 @@
   <button class="ts-manual" onclick="startTutorial()" style="margin-top:8px;color:#b0d0f0;">🎮 初めての方はこちら（チュートリアル）</button>
   <div id="ts-records"></div>
   <div class="ts-credit">
-    原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-    <span class="ts-ver">v1.3 — マップUI改善（v38）</span>
+    <span class="ts-ver">v1.3</span>
   </div>
 </div>
 
 <div class="wrap">
   <header>
-    <h1>戦国武将ゲーム</h1>
-    <span class="sub">リメイク版 ｜ ルール検証プロトタイプ</span>
-    <span class="ver">v1.3 — マップUI改善（v38）</span>
+    <h1>JORAKU</h1>
+    <span class="sub">六雄争覇</span>
+    <span class="ver">v1.3</span>
   </header>
 
   <div class="layout">
@@ -689,7 +688,8 @@ const Audio = {
 };
 
 // ---- パラメータ（仕様書 第6章より） ----
-const NPLAYERS = 6; // 0=あなた、1〜5=AI
+let NPLAYERS = 6; // 0=あなた、1〜5=AI（ゲーム開始時に確定）
+let SELECTED_OPPONENTS = null; // nullなら全大名、配列ならDAIMYOインデックスのリスト
 const PCOLORS = ['#2060a0', '#c02828', '#2a7a38', '#7030a8', '#d08000', '#008888']; // 青・赤・緑・紫・黄橙・シアン
 // 選択可能な6大名（武将名・本拠ID・本拠国名）
 const DAIMYO = [
@@ -909,11 +909,14 @@ function initGame(){
   KUNI.forEach(k=>{
     byid[k.id] = {...k, owner:null, castle:false, army:{}, armyOwner:null}; // owner=城主, armyOwner=兵の所有者
   });
-  // プレイヤーが選んだ大名(MYCHOICE)を0、残り大名をAI(1〜)に割り当てる。
+  // プレイヤーが選んだ大名(MYCHOICE)を0、選択した対戦相手をAI(1〜)に割り当てる。
   const chosen = DAIMYO[MYCHOICE];
-  const others = DAIMYO.filter((_,i)=>i!==MYCHOICE);
-  PNAMES = ['あなた（'+chosen.name+'）', ...others.map(d=>d.name)];
-  PHOMES = [chosen.home, ...others.map(d=>d.home)];
+  const opponents = SELECTED_OPPONENTS !== null
+    ? SELECTED_OPPONENTS.map(j => DAIMYO[j])
+    : DAIMYO.filter((_,i) => i !== MYCHOICE);
+  PNAMES = ['あなた（'+chosen.name+'）', ...opponents.map(d=>d.name)];
+  PHOMES = [chosen.home, ...opponents.map(d=>d.home)];
+  NPLAYERS = PHOMES.length;
   // 本拠は無料築城済み・各50万石・初期兵歩兵1＋大将。
   PHOMES.forEach((id,p)=>{
     byid[id].owner=p; byid[id].castle=true; byid[id].army={歩兵:1,大将:1}; byid[id].armyOwner=p;
@@ -2308,7 +2311,7 @@ function showDaimyoSelect(){
   DAIMYO.forEach((d,i)=>{
     const dist=distOf(d.home);
     const diff = dist<=2?'<span style="color:#4a6b3a;">易（京に近い）</span>'
-               : dist>=8?'<span style="color:var(--aka);">難（京から遠い）</span>'
+               : dist>=5?'<span style="color:var(--aka);">難（京から遠い）</span>'
                : '<span style="color:#8a6d2a;">中</span>';
     cards+=`<button class="act ghost" style="display:block;width:100%;text-align:left;margin:3px 0;padding:5px 8px;"
       onclick="chooseDaimyo(${i})">
@@ -2337,16 +2340,61 @@ function showDaimyoSelect(){
   mb.style.display='flex';
 }
 function chooseDaimyo(i){
-  MYCHOICE=i;
+  MYCHOICE = i;
+  showOpponentSelect();
+}
+
+function showOpponentSelect(){
+  const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
+  const chosen = DAIMYO[MYCHOICE];
+  const others = DAIMYO.map((d,j)=>({d,j})).filter(({j})=>j!==MYCHOICE);
+  const diffLabel = dist => dist<=2?'<span style="color:#2a7a38;">易</span>':dist>=5?'<span style="color:#c02828;">難</span>':'<span style="color:#8a6d2a;">中</span>';
+  const rows = others.map(({d,j},idx)=>{
+    const dist = gateDist(d.home);
+    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;
+        border:1px solid var(--line);border-radius:3px;margin:3px 0;background:#fff;user-select:none;">
+      <input type="checkbox" name="opp" value="${j}" checked style="width:15px;height:15px;cursor:pointer;">
+      <span style="font-weight:700;">${d.name}</span>
+      <span style="font-size:11px;color:#6b5f48;">（本拠：${d.homeName}）</span>
+      <span style="font-size:11px;margin-left:auto;">難易度：${diffLabel(dist)}</span>
+    </label>`;
+  }).join('');
+  m.innerHTML=`
+    <h3>対戦相手を選んでください</h3>
+    <p style="font-size:11px;color:#6b5f48;margin:2px 0 8px;">
+      あなた：<b>${chosen.name}</b>（${chosen.homeName}）　1〜5人選べます。
+    </p>
+    <div id="opp-list">${rows}</div>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+      <button class="act" onclick="confirmOpponents()" style="flex:1;padding:8px;">ゲーム開始 ▶</button>
+      <span id="opp-count-msg" style="font-size:12px;color:#6b5f48;white-space:nowrap;"></span>
+    </div>
+  `;
+  m.querySelectorAll('input[name=opp]').forEach(cb=>cb.addEventListener('change', updateOppCount));
+  updateOppCount();
+  mb.style.display='flex';
+}
+
+function updateOppCount(){
+  const n = document.querySelectorAll('input[name=opp]:checked').length;
+  const el = document.getElementById('opp-count-msg');
+  if(el) el.textContent = n > 0 ? `${n}人選択中` : '⚠ 1人以上選択してください';
+}
+
+function confirmOpponents(){
+  const checked = [...document.querySelectorAll('input[name=opp]:checked')].map(cb=>parseInt(cb.value));
+  if(checked.length === 0){ updateOppCount(); return; }
+  SELECTED_OPPONENTS = checked; // DAIMYOインデックスの配列
   document.getElementById('modalbg').style.display='none';
   startGame();
 }
+
 function startGame(){
   initGame();
   document.getElementById('log').innerHTML='';
   log(`<span class="turn">── 第1巡 ──</span>`);
   const me=DAIMYO[MYCHOICE];
-  log(`あなたは【${me.name}】（本拠：${me.homeName}）。全58か国・6人対戦。先に上洛した者が天下を取る。`);
+  log(`あなたは【${me.name}】（本拠：${me.homeName}）。全58か国・${NPLAYERS}人対戦。先に上洛した者が天下を取る。`);
   const orderNames = G.turnOrder.map(p=>PNAMES[p].replace('あなた（','').replace('）','')).join(' → ');
   log(`手番順（京都から遠い順）：${orderNames}`);
   render();
@@ -2536,7 +2584,7 @@ let _tutHighlightEl = null;
 const TUT_STEPS = [
   // 0: ようこそ
   { label:'ようこそ！',
-    msg:'<b>戦国武将ゲーム</b> へようこそ！<br>あなたは <b style="color:#7ab5e0;">織田信長</b> として天下統一を目指します。<br>3手番で基本操作を学びましょう。',
+    msg:'<b>JORAKU ─ 六雄争覇</b> へようこそ！<br>あなたは <b style="color:#7ab5e0;">織田信長</b> として天下統一を目指します。<br>3手番で基本操作を学びましょう。',
     next:'はじめる →', highlight:null },
   // 1: 自国クリック
   { label:'ステップ 1 ／ 7 　自分の国を選ぶ',
@@ -2577,6 +2625,7 @@ function startTutorial(){
   TUTORIAL_STEP = 0;
   // 織田を強制選択（尾張：中央付近でわかりやすい）
   MYCHOICE = 2; // DAIMYO[2]=織田
+  SELECTED_OPPONENTS = null; // チュートリアルは全大名で固定
   DIFFICULTY = 0; // 易しい
   AI_DELAY = 700;
   const ts = document.getElementById('title-screen');
