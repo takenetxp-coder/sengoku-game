@@ -161,21 +161,26 @@
     background-color:#f0dcc4;
     background-image:radial-gradient(circle at 50% 40%, rgba(196,64,47,0.18) 0%, transparent 70%);}
   /* 領地は勢力色で薄く塗り、枠もその色に。誰の国か面で分かる */
-  .kuni.p0{border-color:#2f4a66; background-color:#cdd9e6;
+  .kuni.p0{border-color:#1a4e88; background-color:#c0d4ee;
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p1{border-color:#9c2a1f; background-color:#eccdc7;
+  .kuni.p1{border-color:#a02020; background-color:#ecc8c8;
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p2{border-color:#3a5a2c; background-color:#d2dec6;
+  .kuni.p2{border-color:#1e6030; background-color:#c2e0c8;
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p3{border-color:#5a3a7a; background-color:#d8cce8;
+  .kuni.p3{border-color:#5820a0; background-color:#d4c4ec;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
+  .kuni.p4{border-color:#a06000; background-color:#f0e0a0;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
+  .kuni.p5{border-color:#007070; background-color:#b0e0e0;
     background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
   .kuni.sel{outline:3px solid var(--kin); outline-offset:1px; z-index:6;}
   .kuni.reach{outline:2px solid #4a6b3a; outline-offset:1px; z-index:5;}
   .kuni.return-target{outline:3px solid #c8a020; outline-offset:2px; z-index:6; animation:pulse-gold 1s infinite alternate;}
   @keyframes pulse-gold{from{outline-color:#c8a020;}to{outline-color:#ffe060;}}
   .kuni.reach-enemy{outline:2px dashed var(--aka2); outline-offset:1px; z-index:5;}
-  .owner0{color:var(--ao);} .owner1{color:var(--aka2);}
-  .owner2{color:#4a6b3a;} .owner3{color:#5a3a7a;}
+  .owner0{color:#2060a0;} .owner1{color:#c02828;}
+  .owner2{color:#2a7a38;} .owner3{color:#7030a8;}
+  .owner4{color:#d08000;} .owner5{color:#008888;}
 
   .legend{display:flex; gap:12px; flex-wrap:wrap; font-size:10px; color:#5a4f3a; margin-top:6px;}
 
@@ -214,10 +219,12 @@
     flex:1; height:16px; border:1px solid var(--line); font-style:normal;
     font-size:9px; text-align:center; line-height:16px; background:#fff; border-radius:2px;
   }
-  .gatebar i.own0{background:#cdd9e6; border-color:var(--ao);}
-  .gatebar i.own1{background:#e8c9c4; border-color:var(--aka2);}
-  .gatebar i.own2{background:#d4e0cc; border-color:#4a6b3a;}
-  .gatebar i.own3{background:#d8cce8; border-color:#5a3a7a;}
+  .gatebar i.own0{background:#c0d4ee; border-color:#1a4e88;}
+  .gatebar i.own1{background:#ecc8c8; border-color:#a02020;}
+  .gatebar i.own2{background:#c2e0c8; border-color:#1e6030;}
+  .gatebar i.own3{background:#d4c4ec; border-color:#5820a0;}
+  .gatebar i.own4{background:#f0e0a0; border-color:#a06000;}
+  .gatebar i.own5{background:#b0e0e0; border-color:#007070;}
 
   .army-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-top:4px;}
   .ucard{
@@ -289,7 +296,7 @@
     position:fixed; inset:0; background:rgba(20,15,10,.7); display:none;
     align-items:center; justify-content:center; z-index:50;
   }
-  .modal{background:var(--paper); border:2px solid var(--aka); border-radius:4px; padding:16px; max-width:380px;}
+  .modal{background:var(--paper); border:2px solid var(--aka); border-radius:4px; padding:16px; max-width:380px; max-height:90vh; overflow-y:auto;}
   .modal h3{margin:0 0 8px; letter-spacing:2px;}
   .battle-row{display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dotted #bbb09a; font-size:12px;}
   .winprob{font-size:26px; text-align:center; margin:8px 0; color:var(--aka); font-weight:700;}
@@ -683,7 +690,7 @@ const Audio = {
 
 // ---- パラメータ（仕様書 第6章より） ----
 const NPLAYERS = 6; // 0=あなた、1〜5=AI
-const PCOLORS = ['#3a5a7a', '#c4402f', '#4a6b3a', '#7a4aaa', '#c8780a', '#2a7a7a']; // 青・赤・緑・紫・橙・青緑
+const PCOLORS = ['#2060a0', '#c02828', '#2a7a38', '#7030a8', '#d08000', '#008888']; // 青・赤・緑・紫・黄橙・シアン
 // 選択可能な6大名（武将名・本拠ID・本拠国名）
 const DAIMYO = [
   {name:'島津', home:'satsuma', homeName:'薩摩'},
@@ -2303,28 +2310,28 @@ function showDaimyoSelect(){
     const diff = dist<=2?'<span style="color:#4a6b3a;">易（京に近い）</span>'
                : dist>=8?'<span style="color:var(--aka);">難（京から遠い）</span>'
                : '<span style="color:#8a6d2a;">中</span>';
-    cards+=`<button class="act ghost" style="display:block;width:100%;text-align:left;margin:5px 0;padding:8px 10px;"
+    cards+=`<button class="act ghost" style="display:block;width:100%;text-align:left;margin:3px 0;padding:5px 8px;"
       onclick="chooseDaimyo(${i})">
-      <b style="font-size:15px;">${d.name}</b>（本拠：${d.homeName}）　難易度：${diff}
-      <div style="font-size:10px;color:#6b5f48;margin-top:2px;">京都ゲートまで ${dist} 国ぶん</div>
+      <b style="font-size:13px;">${d.name}</b>（本拠：${d.homeName}）　難易度：${diff}
+      <div style="font-size:10px;color:#6b5f48;margin-top:1px;">京都ゲートまで ${dist} 国ぶん</div>
     </button>`;
   });
   m.innerHTML=`
     <h3>大名を選んでください</h3>
-    <div style="margin-bottom:10px;padding:8px;background:var(--paper2);border-radius:4px;font-size:12px;">
-      <b>AI難易度：</b>
-      <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="diff" value="0" onchange="DIFFICULTY=0"> 易（AIが甘め）</label>
-      <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="diff" value="1" checked onchange="DIFFICULTY=1"> 普通</label>
-      <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="diff" value="2" onchange="DIFFICULTY=2"> 難（AIが積極的）</label>
-      <div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px;">
+    <div style="margin-bottom:8px;padding:6px 8px;background:var(--paper2);border-radius:4px;font-size:11px;">
+      <div><b>AI難易度：</b>
+        <label style="margin-left:6px;cursor:pointer;"><input type="radio" name="diff" value="0" onchange="DIFFICULTY=0"> 易</label>
+        <label style="margin-left:6px;cursor:pointer;"><input type="radio" name="diff" value="1" checked onchange="DIFFICULTY=1"> 普通</label>
+        <label style="margin-left:6px;cursor:pointer;"><input type="radio" name="diff" value="2" onchange="DIFFICULTY=2"> 難</label>
+      </div>
+      <div style="margin-top:5px;">
         <b>ゲーム速度：</b>
-        <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="speed" value="0" onchange="AI_DELAY=100"> 速い</label>
-        <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="speed" value="1" checked onchange="AI_DELAY=500"> 普通</label>
-        <label style="margin-left:8px;cursor:pointer;"><input type="radio" name="speed" value="2" onchange="AI_DELAY=1500"> 遅い</label>
-        <small style="margin-left:8px;color:#6b5f48;">（AI手番の間隔）</small>
+        <label style="margin-left:6px;cursor:pointer;"><input type="radio" name="speed" value="0" onchange="AI_DELAY=100"> 速い</label>
+        <label style="margin-left:6px;cursor:pointer;"><input type="radio" name="speed" value="1" checked onchange="AI_DELAY=500"> 普通</label>
+        <label style="margin-left:6px;cursor:pointer;"><input type="radio" name="speed" value="2" onchange="AI_DELAY=1500"> 遅い</label>
       </div>
     </div>
-    <p style="font-size:11px;color:#6b5f48;margin:2px 0 8px;">あなたが操る大名を選びます。残り5大名はAIが操作。京都に近い大名ほど上洛で有利です（手番は遠い大名から順に回ります）。</p>
+    <p style="font-size:11px;color:#6b5f48;margin:2px 0 6px;">残り5大名はAI操作。京都に近い大名ほど上洛で有利です。</p>
     ${cards}
   `;
   mb.style.display='flex';
@@ -2547,18 +2554,18 @@ const TUT_STEPS = [
   { label:'ステップ 4 ／ 7 　軍を動かす（その１）',
     msg:'AIが動きました。<b>2手番目</b>です！<br>今度は軍を動かして隣国へ進出してみましょう。<br>まず「<b>尾張</b>」をクリックしてください。',
     next:null, highlight:'owari' },
-  // 5: 隣国クリック
+  // 5: 隣国クリック（自動で伊勢に進軍）
   { label:'ステップ 5 ／ 7 　軍を動かす（その２）',
-    msg:'「尾張」を選択中！<br><b style="color:#4a6b3a;">緑に光った隣国</b>をクリックして進軍してください。<br>（美濃・伊勢などがおすすめです）',
-    next:null, highlight:null },
+    msg:'「尾張」を選択しました！<br>では <b style="color:#4a6b3a;">伊勢</b> へ自動進軍します…',
+    next:null, highlight:'ise' },
   // 6: 移動後—手番終了
   { label:'ステップ 6 ／ 7 　築城の準備',
-    msg:'進出しました！<br>占拠した国に <b style="color:#ffa500;">城がない</b> と収入はなく、軍も動かせません。<br>次の手番で築城して領地にしましょう。<br>「<b>手番を終える ▶</b>」を押してください。',
+    msg:'伊勢へ進軍しました！<br>占拠した国に <b style="color:#ffa500;">城がない</b> と収入はなく、軍も動かせません。<br>次の手番で築城して領地にしましょう。<br>「<b>手番を終える ▶</b>」を押してください。',
     next:null, highlight:'btnEnd' },
   // 7: 3手番目—築城
   { label:'ステップ 7 ／ 7 　築城する',
-    msg:'<b>3手番目</b>です。<br>先ほど占拠した国（兵のいる城なしの土地）をクリックし、<br>右パネルの「<b>この国に築城</b>」ボタンを押しましょう。',
-    next:null, highlight:null },
+    msg:'<b>3手番目</b>です。<br>「<b>伊勢</b>」（兵のいる城なしの土地）をクリックし、<br>右パネルの「<b>この国に築城</b>」ボタンを押しましょう。',
+    next:null, highlight:'ise' },
   // 8: 完了
   { label:'🎉 チュートリアル完了！',
     msg:'🏯 <b>築城完了！</b> 基本操作をマスターしました。<br>目標は<b>ゲート国6つのうち4つ</b>を支配して<b>大将を京都へ</b>。<br>あとは自由に天下統一を目指しましょう！',
@@ -2618,6 +2625,19 @@ function tutStep(n){
 
   tutClearHighlight();
   if(step.highlight){ setTimeout(()=>tutSetHighlight(step.highlight), 300); }
+
+  // ステップ5：尾張→伊勢へ自動進軍
+  if(n === 5){
+    setTimeout(()=>{
+      if(!TUTORIAL_MODE || TUTORIAL_STEP !== 5) return;
+      // clickKuni完了後にG.moveFromが設定されているはず
+      if(G.moveFrom !== 'owari') G.moveFrom = 'owari';
+      const owari = G.byid['owari'];
+      if(owari && unitsTotal(owari.army) > 0){
+        doMove('owari', 'ise', {...owari.army});
+      }
+    }, 900);
+  }
 }
 
 function tutSetHighlight(target){
@@ -2625,6 +2645,9 @@ function tutSetHighlight(target){
   let el = null;
   if(target === 'owari'){
     el = document.querySelector('.kuni[data-id="owari"]');
+    if(el) el.classList.add('tut-glow');
+  } else if(target === 'ise'){
+    el = document.querySelector('.kuni[data-id="ise"]');
     if(el) el.classList.add('tut-glow');
   } else if(target === 'armygrid'){
     el = document.querySelector('#armygrid .ucard:not([disabled])');
