@@ -273,7 +273,7 @@
   <button class="ts-manual" onclick="window.open('manual.html','_blank')">📖 遊び方マニュアル</button>
   <div class="ts-credit">
     原作：タカトクトイス「戦国武将ゲーム」（1982年）<br>
-    <span class="ts-ver">v0.7 — セーブ/ロード（v31）</span>
+    <span class="ts-ver">v0.8 — AI協調強化（v32）</span>
   </div>
 </div>
 
@@ -281,7 +281,7 @@
   <header>
     <h1>戦国武将ゲーム</h1>
     <span class="sub">リメイク版 ｜ ルール検証プロトタイプ</span>
-    <span class="ver">v0.7 — セーブ/ロード（v31）</span>
+    <span class="ver">v0.8 — AI協調強化（v32）</span>
   </header>
 
   <div class="layout">
@@ -1751,6 +1751,22 @@ function showHelp(){
 }
 
 // ---- AI思考：1手番1アクション（pは手番プレイヤー番号 1〜3）----
+// ---- AI協調：脅威度計算 ----
+// 脅威度スコア：ゲート数×2 + 参内宣言中+10 + 領地数×0.1
+function threatScore(p){
+  return gateOwned(p)*2 + (G.sanpai[p]?10:0) + ownedKuni(p).length*0.1;
+}
+// 自分(excludeP)以外で最も脅威度の高い対戦相手を返す
+function getMostDangerous(excludeP){
+  let best=-1, bestScore=-1;
+  for(let q=0;q<NPLAYERS;q++){
+    if(q===excludeP) continue;
+    const s=threatScore(q);
+    if(s>bestScore){ bestScore=s; best=q; }
+  }
+  return {player:best, score:bestScore};
+}
+
 function aiTurn(p){
   if(G.over) return;
   if(G.exile[p]>0){
@@ -1801,6 +1817,28 @@ function aiTurn(p){
       log(`<span class="ai">${PNAMES[p]}</span>：参内を阻止すべく ${f.nm}→${t.nm} へ急襲！`);
       resolveBattle(block.from,block.to,p,Math.random()<block.winp,block.winp,{...f.army},true);
       acted=true;
+    }
+  }
+
+  // (a-coord) 協調阻止：最も危険な敵のゲート国を優先攻撃（普通・難のみ、参内未宣言時）
+  if(!acted && DIFFICULTY>=1 && !anyEnemySanpai){
+    const {player:dangerC, score:dScoreC}=getMostDangerous(p);
+    // 難=ゲート実質2相当(score>=4)、普通=ゲート3相当(score>=6) で協調発動
+    const coordThr = DIFFICULTY===2 ? 4 : 6;
+    if(dangerC!==-1 && dScoreC>=coordThr){
+      const coordAtk=cands.filter(c=>{
+        if(!c.enemy) return false;
+        const t=G.byid[c.to];
+        return (t.owner===dangerC||t.armyOwner===dangerC) &&
+               (c.isGate||c.isKyoto) &&
+               c.winp>=(DIFFICULTY===2?0.35:0.45);
+      }).sort((x,y)=>y.winp-x.winp)[0];
+      if(coordAtk){
+        const f=G.byid[coordAtk.from], t=G.byid[coordAtk.to];
+        log(`<span class="ai">${PNAMES[p]}</span>：${PNAMES[dangerC]}の天下取りを阻止すべく ${f.nm}→${t.nm} へ急行！`);
+        resolveBattle(coordAtk.from,coordAtk.to,p,Math.random()<coordAtk.winp,coordAtk.winp,{...f.army},true);
+        acted=true;
+      }
     }
   }
 
@@ -1867,7 +1905,16 @@ function aiTurn(p){
         acted=true;
       } else {
         const _atkThr=DIFFICULTY===0?0.65:DIFFICULTY===2?0.45:0.55;
-        const atk=cands.filter(c=>c.enemy && c.winp>=_atkThr).sort((x,y)=>y.winp-x.winp)[0];
+        let atk;
+        if(DIFFICULTY>=1){
+          // 危険なプレイヤーの領地を優先して攻める
+          const {player:dangerD, score:dScoreD}=getMostDangerous(p);
+          if(dangerD!==-1 && dScoreD>=3){
+            atk=cands.filter(c=>c.enemy&&(G.byid[c.to].owner===dangerD||G.byid[c.to].armyOwner===dangerD)&&c.winp>=_atkThr)
+                     .sort((x,y)=>y.winp-x.winp)[0];
+          }
+        }
+        if(!atk) atk=cands.filter(c=>c.enemy&&c.winp>=_atkThr).sort((x,y)=>y.winp-x.winp)[0];
         if(atk){
           log(`<span class="ai">${PNAMES[p]}</span>：${G.byid[atk.from].nm}→${G.byid[atk.to].nm} へ出陣！`);
           resolveBattle(atk.from,atk.to,p,Math.random()<atk.winp,atk.winp,{...G.byid[atk.from].army},true);
@@ -1875,7 +1922,13 @@ function aiTurn(p){
         }
       }
     } else {
-      cands.sort((x,y)=>((x.isKyoto?-2:0)+(x.isGate?-1:0)+x.dist)-((y.isKyoto?-2:0)+(y.isGate?-1:0)+y.dist));
+      // invadeフェーズ：危険プレイヤーの領地を優先しつつ京都・ゲート・距離でソート
+      const {player:dangerI, score:dScoreI}=getMostDangerous(p);
+      cands.sort((x,y)=>{
+        const xD=DIFFICULTY>=1&&dangerI!==-1&&dScoreI>=3&&(G.byid[x.to].owner===dangerI||G.byid[x.to].armyOwner===dangerI)?-3:0;
+        const yD=DIFFICULTY>=1&&dangerI!==-1&&dScoreI>=3&&(G.byid[y.to].owner===dangerI||G.byid[y.to].armyOwner===dangerI)?-3:0;
+        return (xD+(x.isKyoto?-2:0)+(x.isGate?-1:0)+x.dist)-(yD+(y.isKyoto?-2:0)+(y.isGate?-1:0)+y.dist);
+      });
       for(const c of cands){
         const t=G.byid[c.to], f=G.byid[c.from];
         if(c.empty){
