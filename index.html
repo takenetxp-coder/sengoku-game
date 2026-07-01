@@ -120,16 +120,15 @@
   /* ---- map ---- */
   #map{
     position:relative;
-    /* 海＋和紙の質感：青灰のベースに、ほのかな波と紙の繊維 */
-    background-color:#cdd9dd;
+    /* 日本海・太平洋の深い青 */
+    background-color:#2e5f8a;
     background-image:
-      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.25) 0%, transparent 40%),
-      radial-gradient(circle at 70% 60%, rgba(120,150,170,0.18) 0%, transparent 45%),
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 4px),
-      repeating-linear-gradient(90deg, rgba(90,120,140,0.05) 0 3px, transparent 3px 6px);
+      radial-gradient(ellipse at 25% 55%, rgba(60,120,190,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 78% 28%, rgba(20,50,110,0.28) 0%, transparent 48%),
+      repeating-linear-gradient(165deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 6px);
     border:2px solid #8a7a5a; border-radius:4px; padding:6px;
     min-height:380px; overflow-x:auto;
-    box-shadow:inset 0 0 30px rgba(60,90,110,0.3);
+    box-shadow:inset 0 0 40px rgba(0,20,60,0.5);
   }
   .kuni{
     position:absolute; width:50px; height:40px; border:1.5px solid #8a7a5a;
@@ -150,29 +149,33 @@
   .kuni .army{position:absolute; bottom:1px; right:1px; min-width:13px; height:13px;
     border-radius:50%; color:#fff; font-size:9px; font-weight:700; line-height:13px;
     text-align:center; border:1px solid rgba(255,255,255,0.7); box-shadow:0 1px 2px rgba(0,0,0,0.4);
-    padding:0 1px;}
+    padding:0 1px;
+    text-shadow:-1px -1px 0 rgba(0,0,0,0.8), 1px -1px 0 rgba(0,0,0,0.8),
+                -1px  1px 0 rgba(0,0,0,0.8), 1px  1px 0 rgba(0,0,0,0.8);}
   .kuni .taisho-badge{position:absolute; top:8px; right:1px; width:12px; height:12px;
     border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffe9a0, #c8962a);
     color:#5a3d10; font-size:9px; font-weight:700; line-height:12px; text-align:center;
-    border:1px solid #8a6520; box-shadow:0 1px 2px rgba(0,0,0,0.4);}
+    border:1px solid #8a6520; box-shadow:0 1px 2px rgba(0,0,0,0.4);
+    text-shadow:-1px -1px 0 rgba(255,255,255,0.6), 1px -1px 0 rgba(255,255,255,0.6),
+                -1px  1px 0 rgba(255,255,255,0.6), 1px  1px 0 rgba(255,255,255,0.6);}
   .kuni.gate{box-shadow:0 0 0 2.5px #e08a2a, 0 1px 2px rgba(70,55,30,0.25);}
   .kuni.gate .nm{color:#b5641a;}
   .kuni.kyoto{border-color:var(--aka2); border-width:2.5px;
     background-color:#f0dcc4;
     background-image:radial-gradient(circle at 50% 40%, rgba(196,64,47,0.18) 0%, transparent 70%);}
-  /* 領地は勢力色で薄く塗り、枠もその色に。誰の国か面で分かる */
-  .kuni.p0{border-color:#1a4e88; background-color:#c0d4ee;
-    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p1{border-color:#a02020; background-color:#ecc8c8;
-    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p2{border-color:#1e6030; background-color:#c2e0c8;
-    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p3{border-color:#5820a0; background-color:#d4c4ec;
-    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p4{border-color:#a06000; background-color:#f0e0a0;
-    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
-  .kuni.p5{border-color:#007070; background-color:#b0e0e0;
-    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 60%);}
+  /* 領地は勢力色で塗り、枠もその色に。誰の国か面で分かる（v1.9: コントラスト強化） */
+  .kuni.p0{border-color:#0e3a7a; border-width:2px; background-color:#7eb8e0;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25) 0%, transparent 60%);}
+  .kuni.p1{border-color:#aa1010; border-width:2px; background-color:#f08080;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25) 0%, transparent 60%);}
+  .kuni.p2{border-color:#146028; border-width:2px; background-color:#7acc88;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25) 0%, transparent 60%);}
+  .kuni.p3{border-color:#5018a8; border-width:2px; background-color:#b08cd8;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25) 0%, transparent 60%);}
+  .kuni.p4{border-color:#b06800; border-width:2px; background-color:#f0b840;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25) 0%, transparent 60%);}
+  .kuni.p5{border-color:#007878; border-width:2px; background-color:#50c8cc;
+    background-image:radial-gradient(circle at 30% 25%, rgba(255,255,255,0.25) 0%, transparent 60%);}
   .kuni.sel{outline:3px solid var(--kin); outline-offset:1px; z-index:6;}
   .kuni.reach{outline:2px solid #4a6b3a; outline-offset:1px; z-index:5;}
   .kuni.return-target{outline:3px solid #c8a020; outline-offset:2px; z-index:6; animation:pulse-gold 1s infinite alternate;}
@@ -634,7 +637,7 @@
   <button class="ts-manual" onclick="startWatchMode()" style="margin-top:8px;color:#90d8a0;">👁 全自動観戦モード（AI同士の戦いを観る）</button>
   <div id="ts-records"></div>
   <div class="ts-credit">
-    <span class="ts-ver">v1.7</span>
+    <span class="ts-ver">v1.9</span>
   </div>
 </div>
 
@@ -642,7 +645,7 @@
   <header>
     <h1>JORAKU</h1>
     <span class="sub">六雄争覇</span>
-    <span class="ver">v1.7</span>
+    <span class="ver">v1.9</span>
   </header>
 
   <div class="layout">
@@ -1271,8 +1274,11 @@ function log(msg, cls=''){
 }
 
 // ---- 描画 ----
-const CELL_W=56, CELL_H=46, OX=4, OY=4;
+const CELL_W=56, CELL_H=46, OX=4, OY=4; // 後方互換のため保持
 const KUNI_W=50, KUNI_H=40; // 国マスの大きさ（街道線の中心計算用）
+
+
+
 // 天守閣のSVGアイコン（指定色で塗る）。小さな城マーク。
 function tenshuSVG(color){
   return `<svg viewBox="0 0 24 24" width="13" height="13" style="display:block;">
@@ -1443,7 +1449,9 @@ function render(){
     el.className='stat me'+sp;
   });
   document.getElementById('m-money').textContent=Math.floor(G.money[sp])+'万両';
-  document.getElementById('m-koku').textContent=castleKoku(sp)+'万石';
+  const _tmk=totalMapKoku();
+  const _domPct=_tmk>0?Math.floor(castleKoku(sp)/_tmk*100):0;
+  document.getElementById('m-koku').textContent=castleKoku(sp)+'万石（制覇率 '+_domPct+'%）';
   document.getElementById('m-income').textContent=
     '+'+income(sp).toFixed(1)+' / -'+upkeep(sp).toFixed(1)+' = '+(netIncome(sp)>=0?'+':'')+netIncome(sp).toFixed(1);
   document.getElementById('m-kuni').textContent=ownedKuni(sp).length+'国 / '+castleCount(sp)+'城';
@@ -1478,7 +1486,7 @@ function render(){
         relHtml=`<div style="font-size:10px;color:${rc};margin-top:3px;">友好度 ${rel}${cfNote}${kkNote}<div style="height:4px;background:#e0d8c8;border-radius:3px;margin-top:2px;overflow:hidden;"><div style="width:${rel}%;height:4px;background:${rc};border-radius:3px;"></div></div></div>`;
       }
       div.innerHTML=`<div style="font-weight:700;color:${PCOLORS[q]};">${PNAMES[q]}${turnNow}${sanpaiMark}</div>`+
-        `<div class="stat"><span>資金/石高/城</span><b>${Math.floor(G.money[q])}万両 / ${castleKoku(q)}万石 / ${castleCount(q)}城</b></div>`+
+        `<div class="stat"><span>資金/石高/城</span><b>${Math.floor(G.money[q])}万両 / ${castleKoku(q)}万石(${_tmk>0?Math.floor(castleKoku(q)/_tmk*100):0}%) / ${castleCount(q)}城</b></div>`+
         `<div class="stat"><span>京都ゲート</span><b>${gateOwned(q)} / 6</b></div>`+relHtml;
       aip.appendChild(div);
     }
@@ -2150,8 +2158,37 @@ function tryDeclareSanpai(p){
     }
   }
 }
-function checkWin(){ validateSanpai(); for(let p=0;p<NPLAYERS;p++) tryDeclareSanpai(p); }
-function showEnd(winner){
+// 制覇勝利：全国石高の50%以上を城付き領地で支配
+function totalMapKoku(){ return Object.values(G.byid).reduce((s,k)=>s+k.kk,0); }
+function checkDominance(){
+  if(G.over) return;
+  const threshold = totalMapKoku()*0.5;
+  for(let p=0;p<NPLAYERS;p++){
+    if(castleKoku(p)>=threshold){
+      G.over=true;
+      log(`<span class="win">🏯 ${PNAMES[p]} が全国石高の50%を制圧！ 制覇勝利！</span>`);
+      Audio.sfxVictory();
+      showEnd(PNAMES[p],'dominance');
+      return;
+    }
+  }
+}
+// 最大ターン判定：150巡超えたら石高トップが勝者
+function checkTimeLimitWin(){
+  if(G.over) return;
+  G.over=true;
+  let topP=0, topKoku=0;
+  for(let p=0;p<NPLAYERS;p++){ const k=castleKoku(p); if(k>topKoku){topKoku=k;topP=p;} }
+  log(`<span class="win">⏰ 第150巡に達した。石高最大の ${PNAMES[topP]} が天下に覇を唱えた！</span>`);
+  Audio.sfxVictory();
+  showEnd(PNAMES[topP],'timelimit');
+}
+function checkWin(){
+  validateSanpai();
+  for(let p=0;p<NPLAYERS;p++) tryDeclareSanpai(p);
+  if(!G.over) checkDominance();
+}
+function showEnd(winner, victoryType='sanpai'){
   deleteSave(); // ゲーム終了時にセーブ削除
   const mb=document.getElementById('modalbg'), m=document.getElementById('modal');
   const s=G.stats||{};
@@ -2159,6 +2196,7 @@ function showEnd(winner){
   const diffLabel=['易','普通','難'][DIFFICULTY]||'普通';
   const newAch = WATCH_MODE ? [] : updateRecords(isWin); // 観戦モードは実績対象外
 
+  const vtLabel = victoryType==='dominance'?'⚔ 制覇勝利':victoryType==='timelimit'?'⏰ 時間切れ判定':'🏯 上洛勝利';
   if(WATCH_MODE){
     // 観戦モード終了画面
     const winnerIdx = PNAMES.indexOf(winner);
@@ -2170,7 +2208,7 @@ function showEnd(winner){
       </div>`).join('');
     m.innerHTML=`<h3>👁 観戦終了</h3>
       <p style="font-size:16px;text-align:center;color:var(--aka);font-weight:700;">${winner} が天下を統一！</p>
-      <p class="hint">第 ${G.turn} 巡で決着。</p>
+      <p class="hint">第 ${G.turn} 巡で決着。勝利条件：${vtLabel}</p>
       <div style="font-size:12px;margin:10px 0;background:var(--paper2);border-radius:4px;padding:8px 10px;text-align:left;">
         <div style="font-weight:700;margin-bottom:6px;letter-spacing:1px;">各勢力の記録</div>
         ${statsRows}
@@ -2178,17 +2216,20 @@ function showEnd(winner){
       <button class="act" onclick="document.getElementById('modalbg').style.display='none';exitWatchMode()">タイトルへ</button>
       <button class="act ghost" onclick="location.reload()" style="margin-top:6px;">もう一度観戦</button>`;
   } else {
+    const winHint = victoryType==='dominance'?'全国石高の50%以上を支配し、制覇勝利を達成しました。'
+                  : victoryType==='timelimit'?'150巡時点で石高最大として天下に覇を唱えました。'
+                  : '京都に築城し、周辺ゲート国4国以上を支配して上洛を果たしました。';
     const statsHtml=`
       <div style="font-size:12px;margin:10px 0;background:var(--paper2);border-radius:4px;padding:8px 10px;text-align:left;">
         <div style="font-weight:700;margin-bottom:4px;letter-spacing:1px;">ゲーム記録</div>
-        <div>総手番数：<b>${G.turn}</b> 巡　難易度：<b>${diffLabel}</b></div>
+        <div>総手番数：<b>${G.turn}</b> 巡　難易度：<b>${diffLabel}</b>　勝利条件：<b>${vtLabel}</b></div>
         <div>あなたの最大支配国：<b>${s.maxKuni?s.maxKuni[0]:'-'}</b> 国</div>
         <div>合戦　勝：<b>${s.battleWin?s.battleWin[0]:0}</b> 回　負：<b>${s.battleLoss?s.battleLoss[0]:0}</b> 回</div>
         <div>大将を討った回数：<b>${s.taishoKill?s.taishoKill[0]:0}</b> 回</div>
       </div>`;
-    m.innerHTML=`<h3>${isWin?'天下統一！':'天下取れず…'}</h3>
+    m.innerHTML=`<h3>${isWin?'勝利！':'天下取れず…'}</h3>
       <p style="font-size:16px;text-align:center;">${winner} の勝利。</p>
-      <p class="hint">${isWin?'京都に築城し、周辺ゲート国4国以上を支配して上洛を果たしました。':'あなたは敗れました。次こそ天下を！'}</p>
+      <p class="hint">${isWin?winHint:'あなたは敗れました。次こそ天下を！'}</p>
       ${statsHtml}
       ${newAchHtml(newAch)}
       <button class="act" onclick="location.reload()">もう一度</button>`;
@@ -2207,7 +2248,10 @@ function endTurn(){
 function advanceTurn(){
   if(G.over) return;
   G.orderIdx = (G.orderIdx+1) % NPLAYERS;
-  if(G.orderIdx===0) G.turn++;
+  if(G.orderIdx===0){
+    G.turn++;
+    if(G.turn>150){ checkTimeLimitWin(); return; }
+  }
   // 統計：最大領地数を更新
   for(let _p=0;_p<NPLAYERS;_p++){ const _n=ownedKuni(_p).length; if(_n>G.stats.maxKuni[_p]) G.stats.maxKuni[_p]=_n; }
   G.cur = G.turnOrder[G.orderIdx];
